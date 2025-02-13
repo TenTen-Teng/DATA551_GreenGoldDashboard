@@ -11,18 +11,18 @@ This project is committed to fostering an open and welcoming environment. By par
 ## **Ways to Contribute**  
 
 ### 🔹 **Report Bugs**  
-Found a bug? Help us improve by reporting it in our **[Issue Tracker](https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard/issues)**.  
+Found a bug? Help us improve by reporting it in our **[Issue Tracker](https://github.com/TenTen-Teng/DATA551_GreenGoldDashboard/issues)**.  
 When filing a bug, please include:  
 ✅ Your operating system and version.  
 ✅ Your local setup details (e.g., dependencies, Python version).  
 ✅ Step-by-step instructions to reproduce the bug.  
 
 ### 🔹 **Fix Bugs**  
-Check out **GitHub Issues** labeled [`bug`](https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard/issues) and [`help wanted`](https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard/issues?q=is%3Aopen+label%3A%22help+wanted%22).  
+Check out **GitHub Issues** labeled [`bug`](https://github.com/TenTen-Teng/DATA551_GreenGoldDashboard/issues) and [`help wanted`](https://github.com/TenTen-Teng/DATA551_GreenGoldDashboard/issues?q=is%3Aopen+label%3A%22help+wanted%22).  
 If you’d like to work on one, feel free to **assign it to yourself and start coding!**  
 
 ### 🔹 **Implement Features**  
-Have an idea? See if it’s already suggested in **[feature requests](https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard/issues?q=is%3Aopen+label%3Aenhancement)**.  
+Have an idea? See if it’s already suggested in **[feature requests](https://github.com/TenTen-Teng/DATA551_GreenGoldDashboard/issues?q=is%3Aopen+label%3Aenhancement)**.  
 If not, open a **new issue** to discuss before starting work.  
 
 ### 🔹 **Write Documentation**  
@@ -33,7 +33,7 @@ If you notice missing or outdated documentation, you can:
 📌 Fix typos and formatting issues.  
 
 ### 🔹 **Submit Feedback**  
-Got suggestions? Open an issue in **[Issue Tracker](https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard/issues)** and:  
+Got suggestions? Open an issue in **[Issue Tracker](https://github.com/TenTen-Teng/DATA551_GreenGoldDashboard/issues)** and:  
 ✅ Describe your feature request clearly.  
 ✅ Keep the scope focused and practical.  
 ✅ Be patient—this is a community-driven project!  
@@ -46,11 +46,11 @@ Click **Fork** on GitHub to create a copy of this project under your account.
 
 ### **2️⃣ Clone Your Fork Locally**
 ```bash
-git clone https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard.git
+git clone https://github.com/TenTen-Teng/DATA551_GreenGoldDashboard.git
 ```
 Navigate to the project directory:
 ```bash
-cd DATA_551_Green_Gold_Dashboard
+cd DATA551_GreenGoldDashboard
 ```
 
 ### **3️⃣ Create a New Branch for Development**
