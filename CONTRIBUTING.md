@@ -4,7 +4,7 @@
 This document provides guidelines for contributing to the project on GitHub. These are meant to **guide** you, not impose strict rules.  
 
 ## **Code of Conduct**  
-This project is committed to fostering an open and welcoming environment. By participating, you agree to uphold our [Code of Conduct](https://github.com/ubco-mds-2024/DATA_551_Green_Gold_Dashboard/blob/milestone1/CODE_OF_CONDUCT.md).  
+This project is committed to fostering an open and welcoming environment. By participating, you agree to uphold our [Code of Conduct](./CODE_OF_CONDUCT.md).  
 
 ---
 
