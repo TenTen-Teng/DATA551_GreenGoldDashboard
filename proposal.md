@@ -13,7 +13,7 @@ For this project, we will use multiple datasets from official Mexican government
 
 Our data comes from three main sources:  
 
-1. **Agricultural Production Data (SIAP - ag_trans)**  
+1. **Agricultural Production Data (SIAP - agricultural_clean.csv)**  
    This dataset provides yearly agricultural production statistics, including the total production volume and production value of various crops. We will focus specifically on data related to Michoacán and extract the following variables:  
    - **year**: The year of production.  
    - **name_unitme_eng**: The crop name in English (e.g., "avocado").  
@@ -23,7 +23,7 @@ Our data comes from three main sources:
 2. **Employment Data (IMSS - Mexican Social Security Institute)**  
    We will use two tables from the IMSS database to examine employment trends and wage distribution across municipalities:  
 
-   - **Economic Sector Employment (imss_econsec)**: This table provides information on employment by economic sector in each municipality and year. We will use:  
+   - **Economic Sector Employment (imss_economicsectors.csv)**: This table provides information on employment by economic sector in each municipality and year. We will use:  
      - **year**: The year of observation.  
      - **mun**: The municipality code.  
      - **trat**: A binary indicator of whether the municipality is an avocado-producing region.  
@@ -31,7 +31,7 @@ Our data comes from three main sources:
      - **se**: The economic sector classification.  
      - **value**: The number of registered jobs in each economic sector.  
 
-   - **Wage Distribution Data (imss_wages)**: This table records wage levels for different municipalities and years, allowing us to assess income distribution. We will use:  
+   - **Wage Distribution Data (imss_minimumwages.csv)**: This table records wage levels for different municipalities and years, allowing us to assess income distribution. We will use:  
      - **year**: The year of observation.  
      - **mun**: The municipality code.  
      - **trat**: Whether the municipality is an avocado-producing region.  
@@ -39,7 +39,7 @@ Our data comes from three main sources:
      - **q_minwages**: The wage category, expressed in multiples of the minimum wage (e.g., 3 times the minimum wage).  
      - **value**: The number of workers earning the corresponding wage level.  
 
-3. **Income Inequality Data (Gini Coefficient - gini)**  
+3. **Income Inequality Data (Gini Coefficient - gini_mun_month_clean.csv)**  
    This dataset provides the core measure of inequality for our analysis. It contains:  
    - **year**: The year of measurement.  
    - **gini**: The calculated Gini coefficient for each municipality, which measures income inequality (higher values indicate greater inequality).  
