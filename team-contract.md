@@ -47,7 +47,7 @@
 **9. Agreement**
 - By signing below, we agree to follow these terms: 
 -  Team Members: 
-    - Name 1: Teng Li 
-    - Name 2: Luna Yu 
-    - Name 3: Skylar Shao 
-    - Name 4: Vidal Mendoza 
+   - **[@Ieleniayu](https://github.com/Ieleniayu)**  
+   - **[@SkylarShao97](https://github.com/SkylarShao97)**
+   - **[@TenTen-Teng](https://github.com/TenTen-Teng)**
+   - **[@VidalTinoco](https://github.com/VidalTinoco)**

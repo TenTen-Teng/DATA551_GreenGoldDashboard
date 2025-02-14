@@ -12,3 +12,4 @@ The dashboard is structured into multiple interactive sections to enhance user e
 This comprehensive dashboard enables users to analyze how avocado production has influenced economic inequality, compare different agricultural industries, and gain deeper insights into the socioeconomic changes in Michoacán over nearly two decades.
 
 Please see our dashboard [sketch](./sketch.png)
+![sketch](./sketch.png)
