@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 import altair as alt
 import dash_bootstrap_components as dbc
 
-from data_process import crops_line_dataset
+from data_process import crops_line_dataset, gini_line_dataset
 
 
 """Bottom section of the dashboard including 3 grpahs (each takes 3 columns in 
@@ -13,6 +13,7 @@ a bootstrap row)
 
 # Load crop data.
 crop_data = crops_line_dataset()
+gini_data = gini_line_dataset()
 
 # Mapping column names to value names.
 value_types = {
@@ -26,49 +27,8 @@ value_types = {
 }
 
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.layout = dbc.Container(
-    [
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
-                        # Graph 1: line plot with multiple crops.
-                        dcc.Dropdown(
-                                id='ycol-crop-line-widget',
-                                value='production_value',
-                                options=[
-                                    {
-                                        'label': name, 'value': col
-                                        } for col, name in value_types.items()
-                                ]
-                            ),
-                        html.Iframe(
-                                id='crop_line',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '400px'
-                                    },
-                            )
-                    ],
-                    md=4,
-                    style={
-                        'border': '1px solid #d3d3d3',
-                        'border-radius': '10px'
-                        }
-                ),
-                dbc.Col(
-                    # Graph 2: line chart of gini trend over time between 
-                    # avocado-growing and non-avocado-growing municipalities. 
-                ),
-                dbc.Col(
-                    # Graph 3: bar chart of wage, biabia #TODO
-                )
-            ]
-        )
-    ]
-)
 
+# crop lines.
 @app.callback(
     Output('crop_line', 'srcDoc'),
     Input('ycol-crop-line-widget', 'value')
@@ -102,6 +62,85 @@ def plot_crop_value_lines(ycol):
     ).interactive()
 
     return line.to_html()
+
+# Gini lines.
+def plot_gini_value_lines():
+    """Plot line chart for gini between treatment groups and non-treatment 
+    groups over years.
+
+    Returns:
+        Altair plot: The altair chart.
+    """
+
+    base = alt.Chart(gini_data).mark_line().encode(
+        x=alt.X('date:T'),
+        y=alt.Y('gini:Q'),
+        color=alt.Color('trat_2:N')
+    )
+
+    brush = alt.selection_interval(encodings=['x'])
+    lower = base.properties(height=60).add_params(brush)
+
+    upper = base.encode(
+        alt.X('date:T', scale=alt.Scale(domain=brush))
+    )
+
+    return (upper & lower).to_html()
+
+
+app.layout = dbc.Container(
+    [
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        # Graph 1: line plot with multiple crops.
+                        dcc.Dropdown(
+                                id='ycol-crop-line-widget',
+                                value='production_value',
+                                options=[
+                                    {
+                                        'label': name, 'value': col
+                                        } for col, name in value_types.items()
+                                ]
+                            ),
+                        html.Iframe(
+                                id='crop_line',
+                                style={
+                                    'border-width': '0',
+                                    'width': '100%',
+                                    'height': '500px'
+                                    },
+                            )
+                    ],
+                    md=4,
+                    style={
+                        'border': '1px solid #d3d3d3',
+                        'border-radius': '10px'
+                        }
+                ),
+                dbc.Col(
+                    # Graph 2: line chart of gini trend over time between 
+                    # avocado-growing and non-avocado-growing municipalities. 
+                    html.Iframe(
+                            id='gini_line',
+                            style={
+                                'border-width': '0',
+                                'width': '100%',
+                                'height': '500px'
+                                },
+                            srcDoc=plot_gini_value_lines()
+                        )
+                ),
+                dbc.Col(
+                    # Graph 3: bar chart of wage, biabia #TODO
+                )
+            ]
+        )
+    ]
+)
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -19,3 +19,25 @@ def crops_line_dataset():
     ]
 
     return data
+
+def gini_line_dataset():
+    """Load gini dataset
+
+    Return:
+        DataFrame: Grouped dataset by treatment groups, cities, and city codes. 
+    """
+    df_gini = pd.read_csv("../data/gini_mun_month_clean.csv", index_col=0)
+
+    df_gini['date'] = pd.to_datetime(df_gini['date'])
+    df_gini['date'] = df_gini['date'].dt.strftime('%Y-%m')
+    gini_group = df_gini.drop(
+        columns=['year', 'cve', 'mun_name']
+        ).groupby(by=['trat_2', 'date'])
+
+    data = gini_group.aggregate('mean').reset_index()[
+        [
+        'gini', 'date', 'trat_2'
+        ]
+    ]
+
+    return data
