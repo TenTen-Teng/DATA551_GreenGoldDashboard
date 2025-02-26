@@ -50,17 +50,33 @@ def plot_crop_value_lines(ycol):
     line = alt.Chart(crop_data).transform_filter(
         {
             'field': 'name_unitmes',
-            'oneOf': ['Arándano', 'Maíz grano', 'Aguacate']
+            'oneOf': ['Blueburry', 'Corn', 'Acovodo']
             }
     ).mark_line().encode(
-        x=alt.X('year:N', title='Year'),
+        x=alt.X('year:N', title=None),
         y=alt.Y(
             f'{ycol}:Q',
             title=f'{value_types[ycol]} (Michoacán)',
             axis=alt.Axis(format='$s')
             ),
-        color=alt.Color('name_unitmes:N')
-    ).interactive()
+        color=alt.Color(
+            'name_unitmes:N',
+            title="Crops",
+            legend=alt.Legend(
+                titleFontSize=15, labelFontSize=15,
+                orient='top-left',
+                labelLimit=0
+                )
+            )
+    ).interactive().properties(
+        width=350,
+        height=410,
+        title=alt.Title(
+            text=f"{value_types[ycol]} for Different Crops",
+            fontSize=20,
+            anchor='middle'
+        )
+    )
 
     return line.to_html()
 
@@ -74,16 +90,34 @@ def plot_gini_value_lines():
     """
 
     base = alt.Chart(gini_data).mark_line().encode(
-        x=alt.X('date:T'),
-        y=alt.Y('gini:Q'),
-        color=alt.Color('trat_2:N')
+        x=alt.X('date:T', title=None),
+        y=alt.Y('gini:Q', title="Gini Coefficients"),
+        color=alt.Color(
+            'trat_2:N',
+            title="Treatment groups",
+            # legend=alt.Legend(
+            #     titleFontSize=15, labelFontSize=15,
+            #     orient='bottom',
+            #     )
+            legend=None
+            )
     )
 
     brush = alt.selection_interval(encodings=['x'])
-    lower = base.properties(height=60).add_params(brush)
+    lower = base.properties(height=60, width=330).add_params(brush)
 
     upper = base.encode(
-        alt.X('date:T', scale=alt.Scale(domain=brush))
+        alt.X('date:T', title=None, scale=alt.Scale(domain=brush))
+    ).properties(
+        width=330,
+        height=300,
+        title=alt.Title(
+            text="Gini Coeffeicents",
+            # subtitle="avocado-growing vs. non-avocado-growing municipalities",
+            # subtitleFontSize=15,
+            fontSize=20,
+            anchor='middle'
+        )
     )
 
     return (upper & lower).to_html()
@@ -103,24 +137,52 @@ def plot_wage_bars(year):
     ).transform_calculate(
         PercentOfTotal="datum.value / datum.Total"
     ).encode(
-        x=alt.X('rs_group:N'),
-        y=alt.Y('PercentOfTotal:Q', axis=alt.Axis(format='.0%')),
-        color=alt.Color('trat:N'),
+        x=alt.X('rs_group:N', title='Wage Levels'),
+        y=alt.Y(
+            'PercentOfTotal:Q', 
+            title="Percentage of total", 
+            axis=alt.Axis(format='.0%'),
+            ),
+        color=alt.Color(
+            'trat:N',
+            title="Treatment groups",
+            legend=alt.Legend(
+                titleFontSize=15, labelFontSize=15,
+                orient='top-right',
+                labelLimit=0
+                )
+            ),
         opacity=alt.condition(click, alt.value(0.9), alt.value(0.2))
     ).add_params(click).properties(
-        width=300,
-        height=300
+        width=350,
+        height=420,
+        title=alt.Title(
+            text="Wage Levels",
+            # subtitle="avocado-growing vs. non-avocado-growing municipalities",
+            # subtitleFontSize=15,
+            fontSize=20,
+            anchor='middle'
+        )
     )
 
     return bar.to_html()
 
 app.layout = dbc.Container(
     [
+
         dbc.Row(
             [
                 dbc.Col(
                     [
                         # Graph 1: line plot with multiple crops.
+                        html.Iframe(
+                                id='crop_line',
+                                style={
+                                    'border-width': '0',
+                                    'width': '100%',
+                                    'height': '500px'
+                                    },
+                            ),
                         dcc.Dropdown(
                                 id='ycol-crop-line-widget',
                                 value='production_value',
@@ -130,14 +192,6 @@ app.layout = dbc.Container(
                                         } for col, name in value_types.items()
                                 ]
                             ),
-                        html.Iframe(
-                                id='crop_line',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '500px'
-                                    },
-                            )
                     ],
                     md=4,
                     style={
@@ -167,6 +221,15 @@ app.layout = dbc.Container(
                     # Graph 3: bar chart of wage, precentage of wage levels for
                     # selected year in treatment group and non-treatment group.
                     [
+
+                        html.Iframe(
+                                id='wage-bar',
+                                style={
+                                    'border-width': '0',
+                                    'width': '100%',
+                                    'height': '500px'
+                                    },
+                            ),
                         dcc.Dropdown(
                                 id='col-wage-bar-widget',
                                 value=2011,
@@ -175,14 +238,6 @@ app.layout = dbc.Container(
                                         wage_data['year'].unique().tolist()
                                 ]
                             ),
-                        html.Iframe(
-                                id='wage-bar',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '500px'
-                                    },
-                            )
                     ],
                     md=4,
                     style={
@@ -194,6 +249,7 @@ app.layout = dbc.Container(
         )
     ]
 )
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
