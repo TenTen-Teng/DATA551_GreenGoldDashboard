@@ -37,7 +37,7 @@ global_min = df_full['gini'].min()
 global_max = df_full['gini'].max()
 
 # years for dropwdown
-available_years = sorted(df_full['year'].unique())
+available_years = sorted(df_full['year'].unique().tolist())
 
 # type of mun
 map_type_options = [
@@ -204,31 +204,32 @@ def update_map(selected_year, map_type):
         )
     return fig
 
-# Callback to switch between tables
-# @app.callback(
-#     Output("output-table", "children"),
-#     [Input("btn-table1", "n_clicks"),
-#      Input("btn-table2", "n_clicks")]
-# )
-# def display_table(n1, n2):
-#     ctx = dash.callback_context  # To identify which button was clicked
-#     if not ctx.triggered:
-#         return "Click a button to display a table."
+
+# # Callback to switch between tables
+@app.callback(
+    Output("output-table", "children"),
+    [Input("btn-table1", "n_clicks"),
+     Input("btn-table2", "n_clicks")]
+)
+def display_table(n1, n2):
+    ctx = dash.callback_context  # To identify which button was clicked
+    if not ctx.triggered:
+        return "Click a button to display a table."
     
-#     button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
     
-#     if button_id == "btn-table1":
-#         return html.Div([
-#             html.H3("Table 1: Gini Regression", style={"font-size": "14px"}),
-#             html.Iframe(srcDoc=table1_content, width="100%", height="300px", style={"border": "none"})
-#         ])
-#     elif button_id == "btn-table2":
-#         return html.Div([
-#             html.H3("Table 2: Employment Regression", style={"font-size": "14px"}),
-#             html.Iframe(srcDoc=table2_content, width="100%", height="300px", style={"border": "none"})
-#         ])
+    if button_id == "btn-table1":
+        return html.Div([
+            html.H3("Table 1: Gini Regression", style={"font-size": "14px"}),
+            html.Iframe(srcDoc=table1_content, width="100%", height="300px", style={"border": "none"})
+        ])
+    elif button_id == "btn-table2":
+        return html.Div([
+            html.H3("Table 2: Employment Regression", style={"font-size": "14px"}),
+            html.Iframe(srcDoc=table2_content, width="100%", height="300px", style={"border": "none"})
+        ])
     
-#     return "Click a button to display a table."
+    return "Click a button to display a table."
 
 
 # crop lines.
@@ -379,7 +380,7 @@ app.layout = dbc.Container(
             [
                 # Number card.
                 dbc.Col(),
-                # Map chart.
+                #Map chart.
                 dbc.Col(
                     html.Div(
                         style={
@@ -396,7 +397,10 @@ app.layout = dbc.Container(
                                 [
                                     html.Label(
                                         "Select Year:",
-                                        style={'fontWeight': 'bold', 'marginRight': '10px'}
+                                        style={
+                                            'fontWeight': 'bold',
+                                            'marginRight': '10px'
+                                            }
                                         ),
                                     dcc.Dropdown(
                                         id='year-dropdown',
@@ -449,7 +453,55 @@ app.layout = dbc.Container(
                     width=8
                 ),
                 # Tables.
-                dbc.Col(),
+                dbc.Col(
+                    # Container for buttons and table together
+                    html.Div(
+                        [
+                        # Buttons positioned above the table
+                        html.Div(
+                            [
+                                html.H3(
+                                    "Informatio Tables", 
+                                    style={'textAlign': 'center'}
+                                ),
+                                html.Button(
+                                    "Gini", id="btn-table1", n_clicks=0,
+                                    style={
+                                        'fontWeight': 'bold',
+                                        'marginRight': '10px'
+                                        }
+                                    ),
+                                html.Button(
+                                    "Employment Rate", id="btn-table2", 
+                                    n_clicks=0,
+                                    style={
+                                        'fontWeight': 'bold',
+                                        'marginRight': '10px'
+                                        }
+                                    )
+                            ],
+                            style={
+                                'textAlign': 'right', 'padding-right': '2px'
+                                }
+                        ),
+                        # Visualization container - Positioned in the top-right
+                        html.Div(
+                            id="output-table",
+                            style={
+                                "position": "absolute", 
+                                # "top": "100px",  # Shifted down to fit buttons
+                                # "right": "10px", 
+                                "height": "500px",
+                                "border": "1px solid #ddd",
+                                "padding": "10px",
+                                "backgroundColor": "#f8f9fa",
+                                "boxShadow": "2px 2px 10px rgba(0,0,0,0.1)"
+                                }
+                            )
+                        ]
+                    ),
+                    width=2
+                ),
             ]
         ),
         html.Br(),
