@@ -4,24 +4,28 @@ from dash.dependencies import Input, Output
 import altair as alt
 import dash_bootstrap_components as dbc
 
-
 from dash import Input, Output
-import pandas as pd
-import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
-from unidecode import unidecode
-from shapely.ops import transform
-import pyproj
-from pathlib import Path
-
 
 from data_process import (
-    crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset
+    crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
+    number_card_dataset
     )
+from helper import calculate_change
 
 """>>>>>> Load data <<<<<<"""
+'''Numbers data'''
+# Prepare dataset.
+df_agg = number_card_dataset()
+gini_data = df_agg.pivot(
+    index="year", columns="mun_name", values="gini"
+    ).to_dict()
+
+# Store unique values to avoid redundant calculations
+unique_municipalities = sorted(df_agg["mun_name"].unique())
+unique_years = sorted(df_agg["year"].unique())
 
 '''Map data'''
 # Prepare map data.
@@ -63,9 +67,9 @@ a bootstrap row)
 )'''
 
 # Load crop data.
-crop_data = crops_line_dataset()
-gini_data = gini_line_dataset()
-wage_data = wage_dataset()
+df_crop_data = crops_line_dataset()
+df_gini_data = gini_line_dataset()
+df_wage_data = wage_dataset()
 
 # Mapping column names to value names.
 value_types = {
@@ -79,7 +83,64 @@ value_types = {
 }
 
 """>>>>>> Callbacks <<<<<<"""
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+# app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+
+# Number card callback.
+@app.callback(
+    [
+        Output("gini-title", "children"),
+        Output("gini-value-1", "children"),
+        Output("gini-value-2", "children"),
+        Output("change-container", "children"),  # Outputs both arrow and percentage change
+    ],
+    [
+        Input("mun-dropdown", "value"),
+        Input("year-dropdown-1", "value"),
+        Input("year-dropdown-2", "value")
+        ],
+)
+def update_gini(selected_mun, year1, year2):
+    """
+    Update Gini coefficient display based on selected municipality and years.
+
+    Args:
+        selected_mun (str): Selected municipality.
+        year1 (int): First selected year (before 2011).
+        year2 (int): Second selected year (after 2011).
+
+    Returns:
+        tuple: Updated values for Gini title, two Gini values, and change 
+        indicator.
+    """
+
+    gini_year1 = gini_data.get(selected_mun, {}).get(year1)
+    gini_year2 = gini_data.get(selected_mun, {}).get(year2)
+    change = calculate_change(gini_year1, gini_year2)
+
+    if gini_year1 is None or gini_year2 is None:
+        arrow, arrow_color, change_display = " ? ", "white", "N/A"
+    else:
+        arrow, arrow_color = (
+            (" ▲ ", "red") if change > 0 else
+            (" ▼ ", "green") if change < 0 else
+            (" - ", "gray")
+        )
+        change_display = f"{abs(change):.1f}%"
+
+    # Combine arrow and percentage change into a single display element
+    change_output = html.Span(
+        [arrow, " ", change_display],
+        style={"color": arrow_color, "fontSize": "24px", "fontWeight": "bold"}
+    )
+
+    return (
+        f"Gini {selected_mun}",
+        f"{year1}: {gini_year1:.3f}" if gini_year1 is not None else f"{year1}: N/A",
+        f"{year2}: {gini_year2:.3f}" if gini_year2 is not None else f"{year2}: N/A",
+        change_output,  # Displays arrow + percentage
+    )
+
 
 # Callback to update the map based on selected year and map type
 @app.callback(
@@ -205,7 +266,7 @@ def update_map(selected_year, map_type):
     return fig
 
 
-# # Callback to switch between tables
+# Callback to switch between tables
 @app.callback(
     Output("output-table", "children"),
     [Input("btn-table1", "n_clicks"),
@@ -250,7 +311,7 @@ def plot_crop_value_lines(ycol):
         Altair plot: The altair chart.
     """
 
-    line = alt.Chart(crop_data).transform_filter(
+    line = alt.Chart(df_crop_data).transform_filter(
         {
             'field': 'name_unitmes',
             'oneOf': ['Blueburry', 'Corn', 'Acovodo']
@@ -293,7 +354,7 @@ def plot_gini_value_lines():
         Altair plot: The altair chart.
     """
 
-    base = alt.Chart(gini_data).mark_line().encode(
+    base = alt.Chart(df_gini_data).mark_line().encode(
         x=alt.X('date:T', title=None),
         y=alt.Y('gini:Q', title="Gini Coefficients"),
         color=alt.Color(
@@ -335,7 +396,7 @@ def plot_gini_value_lines():
 def plot_wage_bars(year):
     click = alt.selection_point(fields=['trat'], bind='legend')
 
-    bar = alt.Chart(wage_data).mark_bar(opacity=0.7).transform_filter(
+    bar = alt.Chart(df_wage_data).mark_bar(opacity=0.7).transform_filter(
         f"datum.year == {year}"
     ).transform_joinaggregate(
         Total='sum(value)',
@@ -379,7 +440,135 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 # Number card.
-                dbc.Col(),
+                dbc.Col(
+                    [
+                        html.H3(
+                            "Mexico | Michoacán",
+                            style={"textAlign": "center", "color": "white"}
+                            ),
+                        # Municipality selection dropdown
+                        html.Label(
+                            "Select Municipality:",
+                            style={"color": "white"}
+                            ),
+                        dcc.Dropdown(
+                            id="mun-dropdown",
+                            options=[
+                                {"label": mun, "value": mun} \
+                                    for mun in unique_municipalities
+                                    ],
+                            value=unique_municipalities[0],
+                            clearable=False,
+                            style={"color": "black"},
+                        ),
+                        html.Br(),
+
+                        # Year selection dropdowns (pre and post 2011)
+                        html.Label(
+                            "Select Two Years (Pre & Post 2011):",
+                            style={"color": "white"}
+                            ),
+                        dcc.Dropdown(
+                            id="year-dropdown-1",
+                            options=[
+                                {"label": str(y), "value": y} \
+                                    for y in unique_years if y <= 2011
+                                    ],
+                            value=2010,
+                            clearable=False,
+                            style={"color": "black"},
+                        ),
+                        dcc.Dropdown(
+                            id="year-dropdown-2",
+                            options=[
+                                {"label": str(y), "value": y} \
+                                    for y in unique_years if y > 2011
+                                    ],
+                            value=2018,
+                            clearable=False,
+                            style={"color": "black"},
+                        ),
+
+                        html.Br(),
+
+                        # Display Gini coefficient information
+                        html.H3(
+                            id="gini-title",
+                            style={"textAlign": "center", "color": "white"}
+                            ),
+                        html.Div(
+                            [
+                                html.P(
+                                    id="gini-value-1",
+                                    style={
+                                        "textAlign": "center", 
+                                        "fontSize": "18px", 
+                                        "color": "white"
+                                        }
+                                    ),
+                                html.P(
+                                    id="gini-value-2", 
+                                    style={
+                                        "textAlign": "center", 
+                                        "fontSize": "18px", 
+                                        "color": "white"
+                                        }
+                                    ),
+
+                                # Display change indicator (arrow + percentage)
+                                html.Div(
+                                    id="change-container",
+                                    style={
+                                        "textAlign": "center", 
+                                        "fontSize": "24px", 
+                                        "fontWeight": "bold"
+                                        },
+                                ),
+                            ]
+                        ),
+
+                        html.Br(),
+
+                        # Background information
+                        html.P(
+                            "Background:",
+                            style={"color": "white", "textAlign": "center"}),
+                        html.P(
+                            "2011 (Full U.S. market access gained)",
+                            style={"color": "gold", "textAlign": "center"}
+                            ),
+
+                        html.Br(),
+
+                        # Explanation of the Gini coefficient
+                        html.P(
+                            "Gini Number: Measures income inequality",
+                            style={"color": "white", "textAlign": "center"}
+                            ),
+                        html.P(
+                            "Higher = more inequality (▲ Red = worsening)", 
+                            style={
+                                "color": "white", 
+                                "textAlign": "center", 
+                                "fontSize": "15px"
+                                }
+                            ),
+                        html.P(
+                            "Lower = more equality (▼ Green = improving)", 
+                            style={
+                                "color": "white", 
+                                "textAlign": "center", 
+                                "fontSize": "15px"
+                                }
+                            ),
+                    ],
+                    width=3,
+                    style={
+                        'border': '1px solid #d3d3d3',
+                        'border-radius': '10px',
+                        },
+                ),
+
                 #Map chart.
                 dbc.Col(
                     html.Div(
@@ -450,8 +639,13 @@ app.layout = dbc.Container(
                             )
                         ]
                     ),
-                    width=8
+                    width=7,
+                    style={
+                        'border': '1px solid #d3d3d3',
+                        'border-radius': '10px',
+                        },
                 ),
+                
                 # Tables.
                 dbc.Col(
                     # Container for buttons and table together
@@ -488,23 +682,26 @@ app.layout = dbc.Container(
                         html.Div(
                             id="output-table",
                             style={
-                                "position": "absolute", 
+                                # "position": "absolute", 
                                 # "top": "100px",  # Shifted down to fit buttons
                                 # "right": "10px", 
                                 "height": "500px",
                                 "border": "1px solid #ddd",
-                                "padding": "10px",
+                                "padding": "1px",
                                 "backgroundColor": "#f8f9fa",
                                 "boxShadow": "2px 2px 10px rgba(0,0,0,0.1)"
                                 }
                             )
                         ]
                     ),
-                    width=2
+                    width=2,
+                    style={
+                        'border': '1px solid #d3d3d3',
+                        'border-radius': '10px',
+                        },
                 ),
-            ]
+            ],
         ),
-        html.Br(),
         html.Br(),
         dbc.Row(
             [
@@ -573,7 +770,7 @@ app.layout = dbc.Container(
                                 value=2011,
                                 options=[
                                     {'label': yr, 'value': yr} for yr in \
-                                        wage_data['year'].unique().tolist()
+                                        df_wage_data['year'].unique().tolist()
                                 ]
                             ),
                     ],
@@ -586,9 +783,15 @@ app.layout = dbc.Container(
                 )
             ]
         )
-    ]
+    ],
+    fluid=False,  # Constrain layout width
+    style={
+        "backgroundColor": "black", 
+        # "padding": "20px", 
+        # "maxWidth": "600px", 
+        "margin": "auto"
+        },
 )
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)

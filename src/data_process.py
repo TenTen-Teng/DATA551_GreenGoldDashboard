@@ -4,9 +4,6 @@ import os
 import geopandas as gpd
 from unidecode import unidecode
 import pandas as pd
-import json
-
-
 
 # Build CSV paths.
 # absolute path to the root of the repository
@@ -18,9 +15,22 @@ while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != rep
 
 # build the path to the data file
 data_path_gini = os.path.join(repo_root, 'data', 'gini_mun_month_clean.csv')
+data_path_ag = os.path.join(repo_root, 'data', 'agricultural_clean.csv')
+data_path_wage = os.path.join(repo_root, 'data', 'imss_minimumwages.csv')
+
 data_path_shapefile = os.path.join(
     repo_root, "data", "shapefiles_mich", "16mun.shp"
     )
+
+def number_card_dataset():
+    df = pd.read_csv(data_path_gini)
+
+    # Aggregate and sort Gini data by municipality
+    df_agg = df.groupby(
+        ["year", "mun_name"]
+        )["gini"].mean().reset_index().sort_values(by="mun_name")
+    
+    return df_agg
 
 def map_dataset():
     # 1. Load and preprocess Gini data 
@@ -77,7 +87,7 @@ def crops_line_dataset():
         else:
             return name
 
-    df_ag = pd.read_csv("../data/agricultural_clean.csv", index_col=0)
+    df_ag = pd.read_csv(data_path_ag, index_col=0)
     df_ag['name_unitmes'] = df_ag['name_unitmes'].apply(lambda x: _map_crop(x))
 
     ag_group = df_ag.groupby(by=['name_unitmes', 'year'])
@@ -133,7 +143,7 @@ def wage_dataset():
             lvl = int(level[-2:]) // 5
         return lvl
     
-    df_wage = pd.read_csv("../data/imss_minimumwages.csv", index_col=0)
+    df_wage = pd.read_csv(data_path_wage, index_col=0)
 
     df_wage['trat'] = df_wage['trat'].apply(lambda x: map_treatment_groups(x))
     df_wage['rs_group'] = df_wage['rs'].apply(lambda x: _map_wage_level(x))
