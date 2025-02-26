@@ -1,5 +1,58 @@
 """Process data for altair graphs"""
+from pathlib import Path
+import os
+import geopandas as gpd
+from unidecode import unidecode
 import pandas as pd
+import json
+
+
+
+# Build CSV paths.
+# absolute path to the root of the repository
+repo_root = Path(__file__).resolve().parent
+
+# search for the root of the repository
+while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
+    repo_root = repo_root.parent
+
+# build the path to the data file
+data_path_gini = os.path.join(repo_root, 'data', 'gini_mun_month_clean.csv')
+data_path_shapefile = os.path.join(
+    repo_root, "data", "shapefiles_mich", "16mun.shp"
+    )
+
+def map_dataset():
+    # 1. Load and preprocess Gini data 
+    gini = pd.read_csv(data_path_gini)
+
+    #gini['trat_1'] = gini.groupby('mun_name')['trat_2'].transform('max')
+    gini_anual = gini.groupby(
+        ['mun_name', 'year'], as_index=False
+        )['gini'].mean()
+    tratamiento = gini[['mun_name', 'trat_2']].drop_duplicates()
+    gini_anual = pd.merge(gini_anual, tratamiento, on='mun_name', how='left')
+
+    # 2. Load and prepare shapefile 
+    mich = gpd.read_file(data_path_shapefile)
+
+    def _limpiar_nombres(nombre):
+        nombre = unidecode(nombre).replace(' de Vazquez Pallares', '').replace(' de Nicolas Romero', '')
+        return nombre.strip()
+    
+    mich['mun_name'] = mich['NOMGEO'].apply(_limpiar_nombres)
+    mich = mich.to_crs(epsg=4326)
+    mich_projected = mich.to_crs(epsg=3857)
+    center_projected = mich_projected.geometry.union_all().centroid
+    center = gpd.GeoSeries([center_projected], crs="EPSG:3857").to_crs(epsg=4326).iloc[0]
+    # center_lon, center_lat = center.x, center.y
+    # minx, miny, maxx, maxy = mich.total_bounds
+    # bounds = dict(west=minx, south=miny, east=maxx, north=maxy)
+    # base_geojson = json.loads(mich.to_json())
+
+    df_full = gini_anual.drop_duplicates(subset=['mun_name', 'year'])
+    return df_full, center, mich
+
 
 def map_treatment_groups(name):
     if name == 0:
@@ -44,7 +97,7 @@ def gini_line_dataset():
     Return:
         DataFrame: Grouped dataset by treatment groups, cities, and city codes. 
     """
-    df_gini = pd.read_csv("../data/gini_mun_month_clean.csv", index_col=0)
+    df_gini = pd.read_csv(data_path_gini, index_col=0)
 
 
     df_gini['date'] = pd.to_datetime(df_gini['date'])
