@@ -83,8 +83,8 @@ value_types = {
 }
 
 """>>>>>> Callbacks <<<<<<"""
-# app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+# app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 # Number card callback.
 @app.callback(
@@ -445,6 +445,7 @@ app.layout = dbc.Container(
                         html.H3(
                             "Mexico | Michoacán",
                             style={"textAlign": "center", "color": "white"}
+                            # style={"textAlign": "center"}
                             ),
                         # Municipality selection dropdown
                         html.Label(
@@ -566,6 +567,7 @@ app.layout = dbc.Container(
                     style={
                         'border': '1px solid #d3d3d3',
                         'border-radius': '10px',
+                        'backgroundColor': "black", 
                         },
                 ),
 
@@ -723,7 +725,7 @@ app.layout = dbc.Container(
                                     {
                                         'label': name, 'value': col
                                         } for col, name in value_types.items()
-                                ]
+                                ],
                             ),
                     ],
                     md=4,
@@ -786,7 +788,7 @@ app.layout = dbc.Container(
     ],
     fluid=False,  # Constrain layout width
     style={
-        "backgroundColor": "black", 
+        # "backgroundColor": "black", 
         # "padding": "20px", 
         # "maxWidth": "600px", 
         "margin": "auto"
