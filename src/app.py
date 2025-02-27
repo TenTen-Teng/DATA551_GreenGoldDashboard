@@ -657,7 +657,7 @@ app.layout = dbc.Container(
                         html.Div(
                             [
                                 html.H3(
-                                    "Informatio Tables", 
+                                    "Information Tables", 
                                     style={'textAlign': 'center'}
                                 ),
                                 html.Button(
