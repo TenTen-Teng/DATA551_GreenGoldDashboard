@@ -1,8 +1,14 @@
 # Green Gold, Unequal Gains Dashboard
 - [Green Gold, Unequal Gains Dashboard](#green-gold-unequal-gains-dashboard)
+  - [Introduction](#introduction)
+  - [Dashboard Structure](#dashboard-structure)
+  - [Demonstration](#demonstration)
+  - [Sketch](#sketch)
 
+## Introduction
 The dashboard provides an in-depth analysis of the relationship between agricultural expansion—particularly the avocado (“green gold”) boom—and wage inequality in Michoacán, Mexico, from 2003 to 2020. Using a map visualization of the Gini Coefficient, it highlights how economic disparities have evolved across different locations over time. A key focus is the impact of 2011, when Mexico gained full access to the U.S. avocado market, leading to rapid industry growth. The dashboard allows users to explore inequality trends before and after this turning point, offering insights into the broader economic effects of agricultural exports.
 
+## Dashboard Structure
 The dashboard is structured into multiple interactive sections to enhance user experience and data interpretation:
 
 - Map (Main Panel): Displays spatial differences in wage inequality over the years, allowing users to compare Gini Coefficient variations across municipalities.
@@ -12,5 +18,9 @@ The dashboard is structured into multiple interactive sections to enhance user e
 
 This comprehensive dashboard enables users to analyze how avocado production has influenced economic inequality, compare different agricultural industries, and gain deeper insights into the socioeconomic changes in Michoacán over nearly two decades.
 
+## Demonstration
+![Demo](./data/media/demo.gif)
+
+## Sketch
 Please see our dashboard [sketch](./sketch.png)
-![sketch](./sketch.png)
+![sketch](./data/media/sketch.png)
