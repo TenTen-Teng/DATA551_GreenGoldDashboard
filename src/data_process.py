@@ -9,12 +9,11 @@ import os
 cwd = os.getcwd()
 # Build CSV paths.
 # absolute path to the root of the repository
-# repo_root = Path(__file__).resolve().parent
-repo_root = Path(cwd).parent
+repo_root = Path(__file__).resolve().parents[1]
 
-# # search for the root of the repository
-# while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
-#     repo_root = repo_root.parent
+# search for the root of the repository
+while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
+    repo_root = repo_root.parent
 
 # build the path to the data file
 data_path_gini = os.path.join(repo_root, 'data', 'gini_mun_month_clean.csv')
@@ -23,10 +22,6 @@ data_path_wage = os.path.join(repo_root, 'data', 'imss_minimumwages.csv')
 
 data_path_shapefile = os.path.join(
     repo_root, "data", "shapefiles_mich", "16mun.shp"
-    )
-
-data_path_shapefile = os.path.join(
-    '..', "data", "shapefiles_mich", "16mun.shp"
     )
 
 def number_card_dataset():
