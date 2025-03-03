@@ -3,6 +3,7 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 import altair as alt
 import dash_bootstrap_components as dbc
+import os
 
 from dash import Input, Output
 import plotly.express as px
@@ -813,4 +814,7 @@ app.layout = dbc.Container(
 
 server = app.server 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(
+        debug=False,
+        host='0.0.0.0', port=int(os.environ.get('PORT', 8050))
+        )
