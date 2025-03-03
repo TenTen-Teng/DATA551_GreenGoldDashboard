@@ -1,21 +1,29 @@
+import os
+from pathlib import Path
+
 import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output
 import altair as alt
 import dash_bootstrap_components as dbc
-import os
-
 from dash import Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 import json
 import pandas as pd
 
-from data_process import (
+from .data_process import (
     crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
     number_card_dataset
     )
-from helper import calculate_change
+from .helper import calculate_change
+
+# absolute path to the root of the repository
+repo_root = Path(__file__).resolve().parent
+
+# search for the root of the repository
+while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
+    repo_root = repo_root.parent
 
 """>>>>>> Load data <<<<<<"""
 '''Numbers data'''
@@ -54,8 +62,12 @@ map_type_options = [
 
 '''Table data'''
 # Define file paths
-file1_path = "../data/tables/tabla1_regresiones_mes_gini_mun_ptotrat.html"
-file2_path = "../data/tables/tabla2_regresion_nivelempleo_year.html"
+file1_path = os.path.join(
+    repo_root, 'data', 'tables', 'tabla1_regresiones_mes_gini_mun_ptotrat.html'
+    )
+file2_path = os.path.join(
+    repo_root, 'data', 'tables', 'tabla2_regresion_nivelempleo_year.html'
+)
 
 # Read HTML files
 with open(file1_path, "r", encoding="utf-8") as file:
