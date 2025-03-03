@@ -8,6 +8,7 @@ from dash import Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+import pandas as pd
 
 from data_process import (
     crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
@@ -354,7 +355,7 @@ def plot_gini_value_lines():
         Altair plot: The altair chart.
     """
 
-    base = alt.Chart(df_gini_data).mark_line().encode(
+    line = alt.Chart(df_gini_data).mark_line().encode(
         x=alt.X('date:T', title=None),
         y=alt.Y('gini:Q', title="Gini Coefficients"),
         color=alt.Color(
@@ -367,6 +368,21 @@ def plot_gini_value_lines():
             legend=None
             )
     )
+
+    # Add a vertical reference line for 2011 to indicate the policy change.
+    rule = alt.Chart(
+        pd.DataFrame(
+            {
+                'Date': ['2011-01-01'],
+                'color': ['red'],
+                }
+            )
+        ).mark_rule().encode(
+            x='Date:T',
+            color=alt.Color('color:N', scale=None)
+    )
+
+    base = alt.layer(line, rule)
 
     brush = alt.selection_interval(encodings=['x'])
     lower = base.properties(height=60, width=330).add_params(brush)
