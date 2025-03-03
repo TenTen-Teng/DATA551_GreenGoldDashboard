@@ -1,0 +1,7 @@
+altair
+dash
+pandas
+plotly == 6.0.0
+flask
+gunicorn 
+geopandas
