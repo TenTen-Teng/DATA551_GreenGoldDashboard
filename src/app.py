@@ -12,18 +12,21 @@ import plotly.graph_objects as go
 import json
 import pandas as pd
 
-from .data_process import (
+from data_process import (
     crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
     number_card_dataset
     )
-from .helper import calculate_change
+from helper import calculate_change
 
-# absolute path to the root of the repository
-repo_root = Path(__file__).resolve().parent
+cwd = os.getcwd()
 
-# search for the root of the repository
-while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
-    repo_root = repo_root.parent
+# # absolute path to the root of the repository
+# repo_root = Path(__file__).resolve().parent
+repo_root = Path(cwd).parent
+
+# # search for the root of the repository
+# while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
+#     repo_root = repo_root.parent
 
 """>>>>>> Load data <<<<<<"""
 '''Numbers data'''
