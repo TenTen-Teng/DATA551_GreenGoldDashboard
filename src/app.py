@@ -811,5 +811,6 @@ app.layout = dbc.Container(
         },
 )
 
+server = app.server 
 if __name__ == '__main__':
     app.run_server(debug=False)
