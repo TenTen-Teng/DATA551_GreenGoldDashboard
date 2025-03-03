@@ -23,9 +23,9 @@ from .helper import calculate_change
 # # absolute path to the root of the repository
 repo_root = Path(__file__).resolve().parents[1]
 
-# search for the root of the repository
-while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
-    repo_root = repo_root.parent
+# # search for the root of the repository
+# while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
+#     repo_root = repo_root.parent
 
 """>>>>>> Load data <<<<<<"""
 '''Numbers data'''

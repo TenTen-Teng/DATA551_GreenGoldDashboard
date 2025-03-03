@@ -12,8 +12,8 @@ cwd = os.getcwd()
 repo_root = Path(__file__).resolve().parents[1]
 
 # search for the root of the repository
-while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
-    repo_root = repo_root.parent
+# while repo_root.name != "DATA551_GreenGoldDashboard" and repo_root.parent != repo_root:
+#     repo_root = repo_root.parent
 
 # build the path to the data file
 data_path_gini = os.path.join(repo_root, 'data', 'gini_mun_month_clean.csv')
