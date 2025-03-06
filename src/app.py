@@ -3,7 +3,7 @@ from pathlib import Path
 
 import dash
 from dash import html, dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import altair as alt
 import dash_bootstrap_components as dbc
 from dash import Input, Output
@@ -483,6 +483,15 @@ def plot_wage_bars(year):
 
     return bar.to_html()
 
+@app.callback(
+    Output("collapse", "is_open"),
+    [Input("gini-def", "n_clicks")],
+    [State("collapse", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 """>>>>>> Dashboard <<<<<<"""
 app.layout = dbc.Container(
@@ -490,13 +499,33 @@ app.layout = dbc.Container(
         html.Br(),
         dbc.Row(
             html.Div(
-                html.H1(
-                    "Green Gold, Unequal Gains Dashboard",
-                    style={'textAlign': 'center'}
-                    )
-                )
+                [
+                    html.H1(
+                        "Green Gold, Unequal Gains 🥑",
+                        style={'textAlign': 'center'},
+                        className="display-3"
+                    ),
+                    dbc.Button(
+                        "Gini Coefficient",
+                        id="gini-def",
+                        n_clicks=0,
+                    ),
+                    dbc.Collapse(
+                        dbc.Card(
+                            dbc.CardBody(
+                                    '❗The Gini coefficient is a measure of income or '
+                                    'wealth inequality in an economy. It ranges from 0 '
+                                    'to 1, where 0 represents perfect equality ('
+                                    'everyone has the same income), and 1 represents '
+                                    'maximum inequality (one person has all the income).',
+                                )
+                        ),
+                        id="collapse",
+                        is_open=False,
+                    ),
+                ]
+            )
         ),
-        html.Br(),
         dbc.Row(
             [
                 # Number card.
