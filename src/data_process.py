@@ -68,7 +68,7 @@ def map_dataset():
 
 def map_treatment_groups(name):
     if name == 0:
-        return 'Avocado Municipalituy'
+        return 'Avocado Municipality'
     else:
         return 'Non-avocado Municipality'
 

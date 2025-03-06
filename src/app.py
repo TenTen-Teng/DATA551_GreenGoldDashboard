@@ -331,7 +331,7 @@ def plot_crop_value_lines(ycol):
             'field': 'name_unitmes',
             'oneOf': ['Blueburry', 'Corn', 'Acovodo']
             }
-    ).mark_line().encode(
+    ).mark_line(point=True).encode(
         x=alt.X('year:N', title=None),
         y=alt.Y(
             f'{ycol}:Q',
@@ -346,7 +346,12 @@ def plot_crop_value_lines(ycol):
                 orient='right',
                 labelLimit=0
                 )
-            )
+            ),
+        tooltip=[
+            alt.Tooltip('name_unitmes:N', title='Crops'),
+            alt.Tooltip('year:T', title='Year'), 
+            alt.Tooltip(f'{ycol}', title=f'{ycol}'.title())
+            ],
     ).interactive().properties(
         width=800,
         height=410,
@@ -368,8 +373,8 @@ def plot_gini_value_lines():
     Returns:
         Altair plot: The altair chart.
     """
-    width = 800
-    line = alt.Chart(df_gini_data).mark_line().encode(
+    width = 1000
+    line = alt.Chart(df_gini_data).mark_line(point=True).encode(
         x=alt.X('date:T', title=None),
         y=alt.Y('gini:Q', title="Gini Coefficients"),
         color=alt.Color(
@@ -380,7 +385,8 @@ def plot_gini_value_lines():
                 orient='right',
                 labelLimit=0
                 ),
-            )
+            ),
+
     )
 
     # Add a vertical reference line for 2011 to indicate the policy change.
@@ -404,7 +410,12 @@ def plot_gini_value_lines():
         ).add_params(brush)
 
     upper = base.encode(
-        alt.X('date:T', title=None, scale=alt.Scale(domain=brush))
+        alt.X('date:T', title=None, scale=alt.Scale(domain=brush)),
+        tooltip=[
+            alt.Tooltip('date:T', title="Date"), 
+            alt.Tooltip('trat_2:N', title='Group'),
+            alt.Tooltip('gini:Q', title='Gini', format='.3f'),
+            ]
     ).properties(
         width=width,
         height=300,
@@ -450,8 +461,15 @@ def plot_wage_bars(year):
                 labelLimit=0
                 )
             ),
-        opacity=alt.condition(click, alt.value(0.9), alt.value(0.2))
-    ).add_params(click).properties(
+        opacity=alt.condition(click, alt.value(0.9), alt.value(0.2)),
+        tooltip=[
+            alt.Tooltip('trat:N', title='Group'),
+            alt.Tooltip('rs_group:N', title='Wage level'),
+            alt.Tooltip(
+                'PercentOfTotal:Q', title='Percentage of total', format='.2%'
+                ),
+        ]
+    ).add_params(click).interactive().properties(
         width=800,
         height=420,
         title=alt.Title(
@@ -766,7 +784,19 @@ app.layout = dbc.Container(
                                             srcDoc=plot_gini_value_lines()
                                         )                                  
                                 ],
-                                label='Gini Coefficients Trend'
+                                id='gini-line-tab',
+                                label='Gini Coefficients Trend ❔',
+                            ),
+                            dbc.Popover(
+                                'Display the trend of Gini Coefficients from '
+                                '2003 to 2020 between avocado-growing '
+                                'municipalities and non-avocado-growing '
+                                'municipalities. Drag the lower line chart to '
+                                'view detailed information for a specific '
+                                'year.',
+                                target="gini-line-tab",
+                                body=True,
+                                trigger="hover",
                             ),
                             dbc.Tab(
                                 [
@@ -790,7 +820,16 @@ app.layout = dbc.Container(
                                                 },
                                         )
                                 ],
-                                label='Values for Different Crops'
+                                label='Values for Different Crops ❔',
+                                id='crop-line-tab'
+                            ),
+                            dbc.Popover(
+                                'Compare different values, such as production '
+                                'value, price, yield, and production volume, '
+                                'across various crops.',
+                                target="crop-line-tab",
+                                body=True,
+                                trigger="hover",
                             ),
                             dbc.Tab(
                                 [
@@ -811,8 +850,19 @@ app.layout = dbc.Container(
                                                 },
                                     ),
                                 ],
-                                label='Wage Level'
-                            )
+                                label='Wage Level ❔',
+                                id='wage-bar-tab'
+                            ),
+                            dbc.Popover(
+                                'Display wage level between avocado-growing '
+                                'municipalities and non-avocado-growing '
+                                'municipalities. Wage level 0 is the lowest '
+                                'wage level and 5 is the hightest. Click '
+                                'legend to highlight specific group and level.',
+                                target="wage-bar-tab",
+                                body=True,
+                                trigger="hover",
+                            ),
                         ]
                     ),
                     style={
