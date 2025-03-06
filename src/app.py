@@ -18,9 +18,7 @@ from .data_process import (
     )
 from .helper import calculate_change
 
-# cwd = os.getcwd()
-
-# # absolute path to the root of the repository
+# absolute path to the root of the repository
 repo_root = Path(__file__).resolve().parents[1]
 
 # # search for the root of the repository
@@ -99,7 +97,8 @@ value_types = {
 }
 
 """>>>>>> Callbacks <<<<<<"""
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.title = "Green Gold Dashboard"
 # app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 # Number card callback.
@@ -344,12 +343,12 @@ def plot_crop_value_lines(ycol):
             title="Crops",
             legend=alt.Legend(
                 titleFontSize=15, labelFontSize=15,
-                orient='top-left',
+                orient='right',
                 labelLimit=0
                 )
             )
     ).interactive().properties(
-        width=350,
+        width=800,
         height=410,
         title=alt.Title(
             text=f"{value_types[ycol]} for Different Crops",
@@ -369,18 +368,18 @@ def plot_gini_value_lines():
     Returns:
         Altair plot: The altair chart.
     """
-
+    width = 800
     line = alt.Chart(df_gini_data).mark_line().encode(
         x=alt.X('date:T', title=None),
         y=alt.Y('gini:Q', title="Gini Coefficients"),
         color=alt.Color(
             'trat_2:N',
             title="Treatment groups",
-            # legend=alt.Legend(
-            #     titleFontSize=15, labelFontSize=15,
-            #     orient='bottom',
-            #     )
-            legend=None
+            legend=alt.Legend(
+                titleFontSize=15, labelFontSize=15,
+                orient='right',
+                labelLimit=0
+                ),
             )
     )
 
@@ -400,17 +399,19 @@ def plot_gini_value_lines():
     base = alt.layer(line, rule)
 
     brush = alt.selection_interval(encodings=['x'])
-    lower = base.properties(height=60, width=330).add_params(brush)
+    lower = base.properties(
+        height=60, width=width
+        ).add_params(brush)
 
     upper = base.encode(
         alt.X('date:T', title=None, scale=alt.Scale(domain=brush))
     ).properties(
-        width=330,
+        width=width,
         height=300,
         title=alt.Title(
             text="Gini Coeffeicents",
-            # subtitle="avocado-growing vs. non-avocado-growing municipalities",
-            # subtitleFontSize=15,
+            subtitle="avocado-growing vs. non-avocado-growing municipalities",
+            subtitleFontSize=15,
             fontSize=20,
             anchor='middle'
         )
@@ -445,18 +446,18 @@ def plot_wage_bars(year):
             title="Treatment groups",
             legend=alt.Legend(
                 titleFontSize=15, labelFontSize=15,
-                orient='top-right',
+                orient='right',
                 labelLimit=0
                 )
             ),
         opacity=alt.condition(click, alt.value(0.9), alt.value(0.2))
     ).add_params(click).properties(
-        width=350,
+        width=800,
         height=420,
         title=alt.Title(
             text="Wage Levels",
-            # subtitle="avocado-growing vs. non-avocado-growing municipalities",
-            # subtitleFontSize=15,
+            subtitle="avocado-growing vs. non-avocado-growing municipalities",
+            subtitleFontSize=15,
             fontSize=20,
             anchor='middle'
         )
@@ -464,9 +465,19 @@ def plot_wage_bars(year):
 
     return bar.to_html()
 
+
 """>>>>>> Dashboard <<<<<<"""
 app.layout = dbc.Container(
     [
+        html.Br(),
+        dbc.Row(
+            html.Div(
+                html.H1(
+                    "Green Gold, Unequal Gains Dashboard",
+                    style={'textAlign': 'center'}
+                    )
+                )
+        ),
         html.Br(),
         dbc.Row(
             [
@@ -739,80 +750,75 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    [
-                        # Graph 1: line plot with multiple crops.
-                        html.Iframe(
-                                id='crop_line',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '500px'
-                                    },
-                            ),
-                        dcc.Dropdown(
-                                id='ycol-crop-line-widget',
-                                value='production_value',
-                                options=[
-                                    {
-                                        'label': name, 'value': col
-                                        } for col, name in value_types.items()
+                    dbc.Tabs(
+                        [
+                            dbc.Tab(
+                                [
+                                    # Graph 1: line chart of gini trend over time between 
+                                    # avocado-growing and non-avocado-growing municipalities. 
+                                    html.Iframe(
+                                            id='gini_line',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                            srcDoc=plot_gini_value_lines()
+                                        )                                  
                                 ],
+                                label='Gini Coefficients Trend'
                             ),
-                    ],
-                    md=4,
+                            dbc.Tab(
+                                [
+                                    # Graph 2: line plot with multiple crops.
+                                    dcc.Dropdown(
+                                            id='ycol-crop-line-widget',
+                                            value='production_value',
+                                            options=[
+                                                {'label': name, 'value': col
+                                                    } for col, name in \
+                                                        value_types.items()
+                                            ],
+                                        ),
+                                    html.Iframe(
+                                            title='Values for Different Crops',
+                                            id='crop_line',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                        )
+                                ],
+                                label='Values for Different Crops'
+                            ),
+                            dbc.Tab(
+                                [
+                                    dcc.Dropdown(
+                                        id='col-wage-bar-widget',
+                                        value=2011,
+                                        options=[
+                                            {'label': yr, 'value': yr} for yr in \
+                                                df_wage_data['year'].unique().tolist()
+                                        ]
+                                    ),
+                                    html.Iframe(
+                                            id='wage-bar',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                    ),
+                                ],
+                                label='Wage Level'
+                            )
+                        ]
+                    ),
                     style={
                         'border': '1px solid #d3d3d3',
                         'border-radius': '10px',
                         },
-                    width=4
-                ),
-                dbc.Col(
-                    # Graph 2: line chart of gini trend over time between 
-                    # avocado-growing and non-avocado-growing municipalities. 
-                    html.Iframe(
-                            id='gini_line',
-                            style={
-                                'border-width': '0',
-                                'width': '100%',
-                                'height': '500px'
-                                },
-                            srcDoc=plot_gini_value_lines()
-                        ),
-                    md=4,
-                    style={
-                        'border': '1px solid #d3d3d3',
-                        'border-radius': '10px',
-                        },
-                    width=4
-                ),
-                dbc.Col(
-                    # Graph 3: bar chart of wage, precentage of wage levels for
-                    # selected year in treatment group and non-treatment group.
-                    [
-
-                        html.Iframe(
-                                id='wage-bar',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '500px'
-                                    },
-                            ),
-                        dcc.Dropdown(
-                                id='col-wage-bar-widget',
-                                value=2011,
-                                options=[
-                                    {'label': yr, 'value': yr} for yr in \
-                                        df_wage_data['year'].unique().tolist()
-                                ]
-                            ),
-                    ],
-                    md=4,
-                    style={
-                        'border': '1px solid #d3d3d3',
-                        'border-radius': '10px',
-                        },
-                    width=4
                 )
             ]
         )
