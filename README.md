@@ -26,7 +26,7 @@ This comprehensive dashboard enables users to analyze how avocado production has
 ![Demo](./data/media/demo.gif)
 
 ## Sketch
-Please see our initial dashboard [sketch](./sketch.png)
+Please see our initial dashboard [sketch](./data/media/sketch.png)
 
 ## Contributors 😎
 <!-- readme: contributors -start -->
