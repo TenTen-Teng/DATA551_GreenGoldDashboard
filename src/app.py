@@ -404,6 +404,21 @@ def plot_gini_value_lines():
 
     base = alt.layer(line, rule)
 
+    # Add a vertical reference line for 2011 to indicate the policy change.
+    rule = alt.Chart(
+        pd.DataFrame(
+            {
+                'Date': ['2011-01-01'],
+                'color': ['red'],
+                }
+            )
+        ).mark_rule().encode(
+            x='Date:T',
+            color=alt.Color('color:N', scale=None)
+    )
+
+    base = alt.layer(line, rule)
+
     brush = alt.selection_interval(encodings=['x'])
     lower = base.properties(
         height=60, width=width
