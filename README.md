@@ -30,5 +30,32 @@ Please see our initial dashboard [sketch](./data/media/sketch.png)
 
 ## Contributors 😎
 <!-- readme: contributors -start -->
+<table>
+	<tbody>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/TenTen-Teng">
+                    <img src="https://avatars.githubusercontent.com/u/18547241?v=4" width="100;" alt="TenTen-Teng"/>
+                    <br />
+                    <sub><b>TenTen-Teng</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/SkylarShao97">
+                    <img src="https://avatars.githubusercontent.com/u/180347421?v=4" width="100;" alt="SkylarShao97"/>
+                    <br />
+                    <sub><b>Skylar Shao</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/VidalTinoco">
+                    <img src="https://avatars.githubusercontent.com/u/54550808?v=4" width="100;" alt="VidalTinoco"/>
+                    <br />
+                    <sub><b>Vidal Tinoco</b></sub>
+                </a>
+            </td>
+		</tr>
+	<tbody>
+</table>
 <!-- readme: contributors -end -->
 
