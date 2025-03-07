@@ -3,7 +3,7 @@ from pathlib import Path
 
 import dash
 from dash import html, dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import altair as alt
 import dash_bootstrap_components as dbc
 from dash import Input, Output
@@ -18,9 +18,7 @@ from .data_process import (
     )
 from .helper import calculate_change
 
-# cwd = os.getcwd()
-
-# # absolute path to the root of the repository
+# absolute path to the root of the repository
 repo_root = Path(__file__).resolve().parents[1]
 
 # # search for the root of the repository
@@ -99,7 +97,8 @@ value_types = {
 }
 
 """>>>>>> Callbacks <<<<<<"""
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.title = "Green Gold Dashboard"
 # app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
 
 # Number card callback.
@@ -332,7 +331,7 @@ def plot_crop_value_lines(ycol):
             'field': 'name_unitmes',
             'oneOf': ['Blueburry', 'Corn', 'Acovodo']
             }
-    ).mark_line().encode(
+    ).mark_line(point=True).encode(
         x=alt.X('year:N', title=None),
         y=alt.Y(
             f'{ycol}:Q',
@@ -344,12 +343,17 @@ def plot_crop_value_lines(ycol):
             title="Crops",
             legend=alt.Legend(
                 titleFontSize=15, labelFontSize=15,
-                orient='top-left',
+                orient='right',
                 labelLimit=0
                 )
-            )
+            ),
+        tooltip=[
+            alt.Tooltip('name_unitmes:N', title='Crops'),
+            alt.Tooltip('year:T', title='Year'), 
+            alt.Tooltip(f'{ycol}', title=f'{ycol}'.title())
+            ],
     ).interactive().properties(
-        width=350,
+        width=800,
         height=410,
         title=alt.Title(
             text=f"{value_types[ycol]} for Different Crops",
@@ -369,19 +373,20 @@ def plot_gini_value_lines():
     Returns:
         Altair plot: The altair chart.
     """
-
-    line = alt.Chart(df_gini_data).mark_line().encode(
+    width = 1000
+    line = alt.Chart(df_gini_data).mark_line(point=True).encode(
         x=alt.X('date:T', title=None),
         y=alt.Y('gini:Q', title="Gini Coefficients"),
         color=alt.Color(
             'trat_2:N',
             title="Treatment groups",
-            # legend=alt.Legend(
-            #     titleFontSize=15, labelFontSize=15,
-            #     orient='bottom',
-            #     )
-            legend=None
-            )
+            legend=alt.Legend(
+                titleFontSize=15, labelFontSize=15,
+                orient='right',
+                labelLimit=0
+                ),
+            ),
+
     )
 
     # Add a vertical reference line for 2011 to indicate the policy change.
@@ -399,18 +404,40 @@ def plot_gini_value_lines():
 
     base = alt.layer(line, rule)
 
+    # Add a vertical reference line for 2011 to indicate the policy change.
+    rule = alt.Chart(
+        pd.DataFrame(
+            {
+                'Date': ['2011-01-01'],
+                'color': ['red'],
+                }
+            )
+        ).mark_rule().encode(
+            x='Date:T',
+            color=alt.Color('color:N', scale=None)
+    )
+
+    base = alt.layer(line, rule)
+
     brush = alt.selection_interval(encodings=['x'])
-    lower = base.properties(height=60, width=330).add_params(brush)
+    lower = base.properties(
+        height=60, width=width
+        ).add_params(brush)
 
     upper = base.encode(
-        alt.X('date:T', title=None, scale=alt.Scale(domain=brush))
+        alt.X('date:T', title=None, scale=alt.Scale(domain=brush)),
+        tooltip=[
+            alt.Tooltip('date:T', title="Date"), 
+            alt.Tooltip('trat_2:N', title='Group'),
+            alt.Tooltip('gini:Q', title='Gini', format='.3f'),
+            ]
     ).properties(
-        width=330,
+        width=width,
         height=300,
         title=alt.Title(
             text="Gini Coeffeicents",
-            # subtitle="avocado-growing vs. non-avocado-growing municipalities",
-            # subtitleFontSize=15,
+            subtitle="avocado-growing vs. non-avocado-growing municipalities",
+            subtitleFontSize=15,
             fontSize=20,
             anchor='middle'
         )
@@ -445,18 +472,25 @@ def plot_wage_bars(year):
             title="Treatment groups",
             legend=alt.Legend(
                 titleFontSize=15, labelFontSize=15,
-                orient='top-right',
+                orient='right',
                 labelLimit=0
                 )
             ),
-        opacity=alt.condition(click, alt.value(0.9), alt.value(0.2))
-    ).add_params(click).properties(
-        width=350,
+        opacity=alt.condition(click, alt.value(0.9), alt.value(0.2)),
+        tooltip=[
+            alt.Tooltip('trat:N', title='Group'),
+            alt.Tooltip('rs_group:N', title='Wage level'),
+            alt.Tooltip(
+                'PercentOfTotal:Q', title='Percentage of total', format='.2%'
+                ),
+        ]
+    ).add_params(click).interactive().properties(
+        width=800,
         height=420,
         title=alt.Title(
             text="Wage Levels",
-            # subtitle="avocado-growing vs. non-avocado-growing municipalities",
-            # subtitleFontSize=15,
+            subtitle="avocado-growing vs. non-avocado-growing municipalities",
+            subtitleFontSize=15,
             fontSize=20,
             anchor='middle'
         )
@@ -464,10 +498,49 @@ def plot_wage_bars(year):
 
     return bar.to_html()
 
+@app.callback(
+    Output("collapse", "is_open"),
+    [Input("gini-def", "n_clicks")],
+    [State("collapse", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
 """>>>>>> Dashboard <<<<<<"""
 app.layout = dbc.Container(
     [
         html.Br(),
+        dbc.Row(
+            html.Div(
+                [
+                    html.H1(
+                        "Green Gold, Unequal Gains 🥑",
+                        style={'textAlign': 'center'},
+                        className="display-3"
+                    ),
+                    dbc.Button(
+                        "Gini Coefficient",
+                        id="gini-def",
+                        n_clicks=0,
+                    ),
+                    dbc.Collapse(
+                        dbc.Card(
+                            dbc.CardBody(
+                                    '❗The Gini coefficient is a measure of income or '
+                                    'wealth inequality in an economy. It ranges from 0 '
+                                    'to 1, where 0 represents perfect equality ('
+                                    'everyone has the same income), and 1 represents '
+                                    'maximum inequality (one person has all the income).',
+                                )
+                        ),
+                        id="collapse",
+                        is_open=False,
+                    ),
+                ]
+            )
+        ),
         dbc.Row(
             [
                 # Number card.
@@ -739,80 +812,107 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    [
-                        # Graph 1: line plot with multiple crops.
-                        html.Iframe(
-                                id='crop_line',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '500px'
-                                    },
-                            ),
-                        dcc.Dropdown(
-                                id='ycol-crop-line-widget',
-                                value='production_value',
-                                options=[
-                                    {
-                                        'label': name, 'value': col
-                                        } for col, name in value_types.items()
+                    dbc.Tabs(
+                        [
+                            dbc.Tab(
+                                [
+                                    # Graph 1: line chart of gini trend over time between 
+                                    # avocado-growing and non-avocado-growing municipalities. 
+                                    html.Iframe(
+                                            id='gini_line',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                            srcDoc=plot_gini_value_lines()
+                                        )                                  
                                 ],
+                                id='gini-line-tab',
+                                label='Gini Coefficients Trend ❔',
                             ),
-                    ],
-                    md=4,
+                            dbc.Popover(
+                                'Display the trend of Gini Coefficients from '
+                                '2003 to 2020 between avocado-growing '
+                                'municipalities and non-avocado-growing '
+                                'municipalities. Drag the lower line chart to '
+                                'view detailed information for a specific '
+                                'year.',
+                                target="gini-line-tab",
+                                body=True,
+                                trigger="hover",
+                            ),
+                            dbc.Tab(
+                                [
+                                    # Graph 2: line plot with multiple crops.
+                                    dcc.Dropdown(
+                                            id='ycol-crop-line-widget',
+                                            value='production_value',
+                                            options=[
+                                                {'label': name, 'value': col
+                                                    } for col, name in \
+                                                        value_types.items()
+                                            ],
+                                        ),
+                                    html.Iframe(
+                                            title='Values for Different Crops',
+                                            id='crop_line',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                        )
+                                ],
+                                label='Values for Different Crops ❔',
+                                id='crop-line-tab'
+                            ),
+                            dbc.Popover(
+                                'Compare different values, such as production '
+                                'value, price, yield, and production volume, '
+                                'across various crops.',
+                                target="crop-line-tab",
+                                body=True,
+                                trigger="hover",
+                            ),
+                            dbc.Tab(
+                                [
+                                    dcc.Dropdown(
+                                        id='col-wage-bar-widget',
+                                        value=2011,
+                                        options=[
+                                            {'label': yr, 'value': yr} for yr in \
+                                                df_wage_data['year'].unique().tolist()
+                                        ]
+                                    ),
+                                    html.Iframe(
+                                            id='wage-bar',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                    ),
+                                ],
+                                label='Wage Level ❔',
+                                id='wage-bar-tab'
+                            ),
+                            dbc.Popover(
+                                'Display wage level between avocado-growing '
+                                'municipalities and non-avocado-growing '
+                                'municipalities. Wage level 0 is the lowest '
+                                'wage level and 5 is the hightest. Click '
+                                'legend to highlight specific group and level.',
+                                target="wage-bar-tab",
+                                body=True,
+                                trigger="hover",
+                            ),
+                        ]
+                    ),
                     style={
                         'border': '1px solid #d3d3d3',
                         'border-radius': '10px',
                         },
-                    width=4
-                ),
-                dbc.Col(
-                    # Graph 2: line chart of gini trend over time between 
-                    # avocado-growing and non-avocado-growing municipalities. 
-                    html.Iframe(
-                            id='gini_line',
-                            style={
-                                'border-width': '0',
-                                'width': '100%',
-                                'height': '500px'
-                                },
-                            srcDoc=plot_gini_value_lines()
-                        ),
-                    md=4,
-                    style={
-                        'border': '1px solid #d3d3d3',
-                        'border-radius': '10px',
-                        },
-                    width=4
-                ),
-                dbc.Col(
-                    # Graph 3: bar chart of wage, precentage of wage levels for
-                    # selected year in treatment group and non-treatment group.
-                    [
-
-                        html.Iframe(
-                                id='wage-bar',
-                                style={
-                                    'border-width': '0',
-                                    'width': '100%',
-                                    'height': '500px'
-                                    },
-                            ),
-                        dcc.Dropdown(
-                                id='col-wage-bar-widget',
-                                value=2011,
-                                options=[
-                                    {'label': yr, 'value': yr} for yr in \
-                                        df_wage_data['year'].unique().tolist()
-                                ]
-                            ),
-                    ],
-                    md=4,
-                    style={
-                        'border': '1px solid #d3d3d3',
-                        'border-radius': '10px',
-                        },
-                    width=4
                 )
             ]
         )
