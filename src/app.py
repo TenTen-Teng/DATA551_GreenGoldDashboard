@@ -510,21 +510,37 @@ def toggle_collapse(n, is_open):
 """>>>>>> Dashboard <<<<<<"""
 app.layout = dbc.Container(
     [
-        # Title
         dbc.Row(
             html.Div(
                 [
-                    html.H1(
+                    html.H2(
                         "Green Gold, Unequal Gains 🥑",
                         style={'textAlign': 'center', 'color': '#D4AF37'},
                         className="display-3"
                     ),
+
                     dbc.Button(
                         "Gini Coefficient",
                         id="gini-def",
                         n_clicks=0,
-                        style={"backgroundColor": "#D4AF37", "color": "#1B3B1A"}
+                        style={"backgroundColor": "#D4AF37", 
+                                "color": "#1B3B1A",
+                                "borderRadius": "5px",
+                                "padding": "8px 15px"
+                            }
                     ),
+                    dbc.Button(
+                        "Switch Page", 
+                        id="page-toggle-button", 
+                        n_clicks=0,
+                        style={"backgroundColor": "#FFFFFF",  
+                                "color": "#D4AF37",  
+                                "border": "2px solid #D4AF37",  
+                                "borderRadius": "5px",
+                                "padding": "8px 15px",
+                                "fontWeight": "bold"
+                            }
+                    ),       
                     dbc.Collapse(
                         dbc.Card(
                             dbc.CardBody(
@@ -537,15 +553,22 @@ app.layout = dbc.Container(
                         ),
                         id="collapse",
                         is_open=False,
-                    ),
+                    )
                 ]
             ),
-            className="mb-4"
+            className="mb-2"
         ),
+        html.Div(id="page-content")
+    ],
+    fluid=True,
+    style={"backgroundColor": "#013220", "padding": "10px"}
+)
 
+def page1():
         # Explanation of the Gini coefficient
-        dbc.Row(
+        return dbc.Row(
             [
+                # Number card.
                 dbc.Col(
                     [
                         html.H3(
@@ -561,6 +584,8 @@ app.layout = dbc.Container(
                             style={"color": "black"},
                         ),
                         html.Br(),
+
+                        # Year selection dropdowns (pre and post 2011)
                         html.Label("Select Two Years (Pre & Post 2011):", style={"color": "#D4AF37"}),
                         dcc.Dropdown(
                             id="year-dropdown-1",
@@ -577,126 +602,270 @@ app.layout = dbc.Container(
                             style={"color": "black"},
                         ),
                         html.Br(),
+
+                        # Display Gini coefficient information
                         html.H3(id="gini-title", style={"textAlign": "center", "color": "#D4AF37"}),
                         html.Div(
                             [
                                 html.P(id="gini-value-1", style={"textAlign": "center", "fontSize": "18px", "color": "#D4AF37"}),
                                 html.P(id="gini-value-2", style={"textAlign": "center", "fontSize": "18px", "color": "#D4AF37"}),
+                                
+                                # Display change indicator (arrow + percentage)
                                 html.Div(id="change-container", style={"textAlign": "center", "fontSize": "24px", "fontWeight": "bold"}),
                             ]
                         ),
+
+                        html.Br(),
+
+                        # Background information
+                        html.P(
+                            "Background:",
+                            style={"color": "white", "textAlign": "center"}),
+                        html.P(
+                            "2011 (Full U.S. market access gained)",
+                            style={"color": "gold", "textAlign": "center"}
+                            ),
+
+                        html.Br(),
+
+                        # Explanation of the Gini coefficient
+                        html.P(
+                            "Gini Number: Measures income inequality",
+                            style={"color": "white", "textAlign": "center"}
+                            ),
+                        html.P(
+                            "Higher = more inequality (▲ Red = worsening)", 
+                            style={
+                                "color": "white", 
+                                "textAlign": "center", 
+                                "fontSize": "15px"
+                                }
+                            ),
+                        html.P(
+                            "Lower = more equality (▼ Green = improving)", 
+                            style={
+                                "color": "white", 
+                                "textAlign": "center", 
+                                "fontSize": "15px"
+                                }
+                            ),
                     ],
                     width=3,
                     style={
-                        'border': '1px solid #D4AF37',
+                        'border': '1px solid #d3d3d3',
                         'border-radius': '10px',
-                        'backgroundColor': "#1B3B1A",
-                    },
+                        'backgroundColor': "black", 
+                        },
                 ),
 
                 #Map chart.
                 dbc.Col(
                     html.Div(
-                        [
-                            html.H2("Interactive Municipal Gini Map", style={'textAlign': 'center', "color": "#D4AF37"}),
-                            html.Label("Select Year:", style={'fontWeight': 'bold', "color": "#D4AF37"}),
-                            dcc.Dropdown(
-                                id='year-dropdown',
-                                options=[{"label": str(year), "value": year} for year in available_years],
-                                value=available_years[0],
-                                clearable=False,
-                            ),
-                            html.Label("Select Map Type:", style={'fontWeight': 'bold', "color": "#D4AF37"}),
-                            dcc.Dropdown(
-                                id='map-type-dropdown',
-                                options=map_type_options,
-                                value="tratados",
-                                clearable=False,
-                            ),
-                            dcc.Graph(id='graph-map')
-                        ],
-                        style={'padding': '10px'}
+                        style={
+                            'fontFamily': 'Open Sans, sans-serif',
+                            'maxWidth': '1000px',
+                            'margin': 'auto'
+                            },
+                        children=[
+                            html.H2(
+                                "Interactive Municipal Gini Map", 
+                                style={'textAlign': 'center', "color": "#D4AF37"}
+                                ),
+                            html.Div(
+                                [
+                                    html.Label(
+                                        "Select Year:",
+                                        style={
+                                            'fontWeight': 'bold',
+                                            'marginRight': '10px',
+                                            "color": "#D4AF37"
+                                            }
+                                        ),
+                                    dcc.Dropdown(
+                                        id='year-dropdown',
+                                        options=[
+                                            {"label": str(year), "value": year} \
+                                                for year in available_years
+                                                ],
+                                        value=available_years[0],
+                                        clearable=False,
+                                        style={
+                                            'width': '100px',
+                                            'height': '25px',         
+                                            'padding': '2px',         
+                                            'fontSize': '15px',       
+                                            'display': 'inline-block'
+                                            }
+                                    )
+                                ],
+                                style={'padding': '10px', 'textAlign': 'center', 'color': '#D4AF37'}
+                                ),
+                            html.Div(
+                                [
+                                    html.Label(
+                                        "Select Map Type:",
+                                        style={'fontWeight': 'bold', 'marginRight': '10px', 'color': '#D4AF37'}
+                                        ),
+                                    dcc.Dropdown(
+                                        id='map-type-dropdown',
+                                        options=map_type_options,
+                                        value="tratados",
+                                        clearable=False,
+                                        style={
+                                            'width': '300px',
+                                            'height': '25px',
+                                            'padding': '2px',
+                                            'fontSize': '15px',
+                                            'display': 'inline-block'
+                                            }
+                                    )
+                                ],
+                                style={'padding': '10px', 'textAlign': 'center'}
+                                ),
+                            html.Div(
+                                [dcc.Graph(id='graph-map')], style={
+                                'padding': '10px',
+                                'width': '100%',  
+                                'height': '500px'
+                                }
+                            )
+                        ]
                     ),
                     width=9,
                     style={
                         'border': '1px solid #D4AF37',
                         'border-radius': '10px',
-                        'backgroundColor': "#1B3B1A",
-                    },
-                ),
-            ],
-            className="mb-4"
+                        'backgroundColor': "#1B3B1A"
+                        },
+                ),        
+            ]
         ),
+    
 
+def page2():
         # Graph 1: line chart of gini trend over time between 
         # avocado-growing and non-avocado-growing municipalities.
-        dbc.Row(
+        return dbc.Row(
             [
                 dbc.Col(
                     dbc.Tabs(
                         [
                             dbc.Tab(
                                 [
+                                    # Graph 1: line chart of gini trend over time between 
+                                    # avocado-growing and non-avocado-growing municipalities. 
                                     html.Iframe(
-                                        id='gini_line',
-                                        style={'border-width': '0', 'width': '100%', 'height': '500px'},
-                                        srcDoc=plot_gini_value_lines()
-                                    )
+                                            id='gini_line',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                            srcDoc=plot_gini_value_lines()
+                                        )                                  
                                 ],
                                 id='gini-line-tab',
-                                label='Gini Coefficients Trend ❔'
+                                label='Gini Coefficients Trend ❔',
+                            ),
+                            dbc.Popover(
+                                'Display the trend of Gini Coefficients from '
+                                '2003 to 2020 between avocado-growing '
+                                'municipalities and non-avocado-growing '
+                                'municipalities. Drag the lower line chart to '
+                                'view detailed information for a specific '
+                                'year.',
+                                target="gini-line-tab",
+                                body=True,
+                                trigger="hover",
                             ),
                             dbc.Tab(
                                 [
+                                    # Graph 2: line plot with multiple crops.
                                     dcc.Dropdown(
-                                        id='ycol-crop-line-widget',
-                                        value='production_value',
-                                        options=[{'label': name, 'value': col} for col, name in value_types.items()],
-                                    ),
+                                            id='ycol-crop-line-widget',
+                                            value='production_value',
+                                            options=[
+                                                {'label': name, 'value': col
+                                                    } for col, name in \
+                                                        value_types.items()
+                                            ],
+                                        ),
                                     html.Iframe(
-                                        id='crop_line',
-                                        style={'border-width': '0', 'width': '100%', 'height': '500px'},
-                                    )
+                                            title='Values for Different Crops',
+                                            id='crop_line',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
+                                        )
                                 ],
                                 label='Values for Different Crops ❔',
                                 id='crop-line-tab'
+                            ),
+                            dbc.Popover(
+                                'Compare different values, such as production '
+                                'value, price, yield, and production volume, '
+                                'across various crops.',
+                                target="crop-line-tab",
+                                body=True,
+                                trigger="hover",
                             ),
                             dbc.Tab(
                                 [
                                     dcc.Dropdown(
                                         id='col-wage-bar-widget',
                                         value=2011,
-                                        options=[{'label': yr, 'value': yr} for yr in df_wage_data['year'].unique().tolist()]
+                                        options=[
+                                            {'label': yr, 'value': yr} for yr in \
+                                                df_wage_data['year'].unique().tolist()
+                                        ]
                                     ),
                                     html.Iframe(
-                                        id='wage-bar',
-                                        style={'border-width': '0', 'width': '100%', 'height': '500px'},
+                                            id='wage-bar',
+                                            style={
+                                                'border-width': '0',
+                                                'width': '100%',
+                                                'height': '500px'
+                                                },
                                     ),
                                 ],
                                 label='Wage Level ❔',
                                 id='wage-bar-tab'
                             ),
+                            dbc.Popover(
+                                'Display wage level between avocado-growing '
+                                'municipalities and non-avocado-growing '
+                                'municipalities. Wage level 0 is the lowest '
+                                'wage level and 5 is the hightest. Click '
+                                'legend to highlight specific group and level.',
+                                target="wage-bar-tab",
+                                body=True,
+                                trigger="hover",
+                            ),
                         ]
                     ),
-                    width=12,
                     style={
-                        'border': '1px solid #D4AF37',
+                        'border': '1px solid #d3d3d3',
                         'border-radius': '10px',
-                        'backgroundColor': "#1B3B1A",
-                    },
+                        },
                 )
             ]
-        ),
-    ],
-    fluid=True,  
-    style={"backgroundColor": "#1B3B1A", "margin": "auto"}  
 )
 
+@app.callback(
+    Output("page-content", "children"),
+    Input("page-toggle-button", "n_clicks"),
+    State("page-content", "children")
+)
+def toggle_page(n_clicks, current_content):
+    return page2() if n_clicks % 2 else page1()
 
 server = app.server 
 if __name__ == '__main__':
     app.run_server(
         debug=False,
-        host='142.231.93.127', 
+        # host='142.231.93.127', 
+        host = '127.0.0.1',
         port=8050
     )
