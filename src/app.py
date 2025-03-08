@@ -353,7 +353,7 @@ def plot_crop_value_lines(ycol):
             ],
     ).interactive().properties(
         width=800,
-        height=410,
+        height=450,
         title=alt.Title(
             text=f"{value_types[ycol]} for Different Crops",
             fontSize=20,
@@ -420,7 +420,7 @@ def plot_gini_value_lines():
 
     brush = alt.selection_interval(encodings=['x'])
     lower = base.properties(
-        height=60, width=width
+        height=100, width=width
         ).add_params(brush)
 
     upper = base.encode(
@@ -432,7 +432,7 @@ def plot_gini_value_lines():
             ]
     ).properties(
         width=width,
-        height=300,
+        height=460,
         title=alt.Title(
             text="Gini Coeffeicents",
             subtitle="avocado-growing vs. non-avocado-growing municipalities",
@@ -485,7 +485,7 @@ def plot_wage_bars(year):
         ]
     ).add_params(click).interactive().properties(
         width=800,
-        height=420,
+        height=440,
         title=alt.Title(
             text="Wage Levels",
             subtitle="avocado-growing vs. non-avocado-growing municipalities",
@@ -759,7 +759,7 @@ def page2():
                                             style={
                                                 'border-width': '0',
                                                 'width': '100%',
-                                                'height': '500px'
+                                                'height': '600px'
                                                 },
                                             srcDoc=plot_gini_value_lines()
                                         )                                  
@@ -796,7 +796,7 @@ def page2():
                                             style={
                                                 'border-width': '0',
                                                 'width': '100%',
-                                                'height': '500px'
+                                                'height': '550px'
                                                 },
                                         )
                                 ],
@@ -826,7 +826,7 @@ def page2():
                                             style={
                                                 'border-width': '0',
                                                 'width': '100%',
-                                                'height': '500px'
+                                                'height': '550px'
                                                 },
                                     ),
                                 ],
