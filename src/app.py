@@ -352,7 +352,7 @@ def plot_crop_value_lines(ycol):
             alt.Tooltip(f'{ycol}', title=f'{ycol}'.title())
             ],
     ).interactive().properties(
-        width=800,
+        width=1000,
         height=450,
         title=alt.Title(
             text=f"{value_types[ycol]} for Different Crops",
@@ -385,7 +385,6 @@ def plot_gini_value_lines():
                 labelLimit=0
                 ),
             ),
-
     )
 
     # Add a vertical reference line for 2011 to indicate the policy change.
@@ -432,7 +431,7 @@ def plot_gini_value_lines():
             ]
     ).properties(
         width=width,
-        height=460,
+        height=350,
         title=alt.Title(
             text="Gini Coeffeicents",
             subtitle="avocado-growing vs. non-avocado-growing municipalities",
@@ -484,7 +483,7 @@ def plot_wage_bars(year):
                 ),
         ]
     ).add_params(click).interactive().properties(
-        width=800,
+        width=1000,
         height=440,
         title=alt.Title(
             text="Wage Levels",
@@ -651,100 +650,200 @@ def page1():
                             ),
                     ],
                     width=3,
-                    style={
-                        'border': '1px solid #d3d3d3',
-                        'border-radius': '10px',
-                        'backgroundColor': "black", 
-                        },
-                ),
-
-                #Map chart.
-                dbc.Col(
-                    html.Div(
-                        style={
-                            'fontFamily': 'Open Sans, sans-serif',
-                            'maxWidth': '1000px',
-                            'margin': 'auto'
-                            },
-                        children=[
-                            html.H2(
-                                "Interactive Municipal Gini Map", 
-                                style={'textAlign': 'center', "color": "#D4AF37"}
-                                ),
-                            html.Div(
-                                [
-                                    html.Label(
-                                        "Select Year:",
-                                        style={
-                                            'fontWeight': 'bold',
-                                            'marginRight': '10px',
-                                            "color": "#D4AF37"
-                                            }
-                                        ),
-                                    dcc.Dropdown(
-                                        id='year-dropdown',
-                                        options=[
-                                            {"label": str(year), "value": year} \
-                                                for year in available_years
-                                                ],
-                                        value=available_years[0],
-                                        clearable=False,
-                                        style={
-                                            'width': '100px',
-                                            'height': '25px',         
-                                            'padding': '2px',         
-                                            'fontSize': '15px',       
-                                            'display': 'inline-block'
-                                            }
-                                    )
-                                ],
-                                style={'padding': '10px', 'textAlign': 'center', 'color': '#D4AF37'}
-                                ),
-                            html.Div(
-                                [
-                                    html.Label(
-                                        "Select Map Type:",
-                                        style={'fontWeight': 'bold', 'marginRight': '10px', 'color': '#D4AF37'}
-                                        ),
-                                    dcc.Dropdown(
-                                        id='map-type-dropdown',
-                                        options=map_type_options,
-                                        value="tratados",
-                                        clearable=False,
-                                        style={
-                                            'width': '300px',
-                                            'height': '25px',
-                                            'padding': '2px',
-                                            'fontSize': '15px',
-                                            'display': 'inline-block'
-                                            }
-                                    )
-                                ],
-                                style={'padding': '10px', 'textAlign': 'center'}
-                                ),
-                            html.Div(
-                                [dcc.Graph(id='graph-map')], style={
-                                'padding': '10px',
-                                'width': '100%',  
-                                'height': '500px'
-                                }
-                            )
-                        ]
-                    ),
-                    width=9,
+                    # style={
+                    #     'border': '1px solid #d3d3d3',
+                    #     'border-radius': '10px',
+                    #     'backgroundColor': "black", 
+                    #     },
                     style={
                         'border': '1px solid #D4AF37',
                         'border-radius': '10px',
                         'backgroundColor': "#1B3B1A"
                         },
-                ),        
-            ]
-        ),
-    
+                ),
+
+        #         #Map chart.
+        #         dbc.Col(
+        #             html.Div(
+        #                 style={
+        #                     'fontFamily': 'Open Sans, sans-serif',
+        #                     'maxWidth': '1000px',
+        #                     'margin': 'auto'
+        #                     },
+        #                 children=[
+        #                     html.H2(
+        #                         "Interactive Municipal Gini Map", 
+        #                         style={'textAlign': 'center', "color": "#D4AF37"}
+        #                         ),
+        #                     html.Div(
+        #                         [
+        #                             html.Label(
+        #                                 "Select Year:",
+        #                                 style={
+        #                                     'fontWeight': 'bold',
+        #                                     'marginRight': '10px',
+        #                                     "color": "#D4AF37"
+        #                                     }
+        #                                 ),
+        #                             dcc.Dropdown(
+        #                                 id='year-dropdown',
+        #                                 options=[
+        #                                     {"label": str(year), "value": year} \
+        #                                         for year in available_years
+        #                                         ],
+        #                                 value=available_years[0],
+        #                                 clearable=False,
+        #                                 style={
+        #                                     'width': '100px',
+        #                                     'height': '25px',         
+        #                                     'padding': '2px',         
+        #                                     'fontSize': '15px',       
+        #                                     'display': 'inline-block'
+        #                                     }
+        #                             )
+        #                         ],
+        #                         style={'padding': '10px', 'textAlign': 'center', 'color': '#D4AF37'}
+        #                         ),
+        #                     html.Div(
+        #                         [
+        #                             html.Label(
+        #                                 "Select Map Type:",
+        #                                 style={'fontWeight': 'bold', 'marginRight': '10px', 'color': '#D4AF37'}
+        #                                 ),
+        #                             dcc.Dropdown(
+        #                                 id='map-type-dropdown',
+        #                                 options=map_type_options,
+        #                                 value="tratados",
+        #                                 clearable=False,
+        #                                 style={
+        #                                     'width': '300px',
+        #                                     'height': '25px',
+        #                                     'padding': '2px',
+        #                                     'fontSize': '15px',
+        #                                     'display': 'inline-block'
+        #                                     }
+        #                             )
+        #                         ],
+        #                         style={'padding': '10px', 'textAlign': 'center'}
+        #                         ),
+        #                     html.Div(
+        #                         [dcc.Graph(id='graph-map')], style={
+        #                         'padding': '10px',
+        #                         'width': '100%',  
+        #                         'height': '500px'
+        #                         }
+        #                     )
+        #                 ]
+        #             ),
+        #             width=9,
+        #             style={
+        #                 'border': '1px solid #D4AF37',
+        #                 'border-radius': '10px',
+        #                 'backgroundColor': "#1B3B1A"
+        #                 },
+        #         ),        
+        #     ]
+        # ),
+
+        # Map chart.
+        dbc.Col(
+            html.Div(
+                style={
+                    'fontFamily': 'Open Sans, sans-serif',
+                    'maxWidth': '1300px',
+                    'margin': 'auto',
+                    'width': '100%'
+                },
+                children=[
+                    html.H2(
+                        "Interactive Municipal Gini Map",
+                        style={'textAlign': 'center', "color": "#D4AF37"}
+                    ),
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                html.Div(
+                                    [
+                                        html.Label(
+                                            "Select Year:",
+                                            style={
+                                                'fontWeight': 'bold',
+                                                'marginRight': '10px',
+                                                "color": "#D4AF37"
+                                            }
+                                        ),
+                                        dcc.Dropdown(
+                                            id='year-dropdown',
+                                            options=[
+                                                {"label": str(year), "value": year}
+                                                for year in available_years
+                                            ],
+                                            value=available_years[0],
+                                            clearable=False,
+                                            style={
+                                                'width': '100px',  
+                                                'height': '25px',
+                                                'padding': '2px',
+                                                'fontSize': '15px',
+                                                'display': 'inline-block'
+                                            }
+                                        )
+                                    ],
+                                    style={'padding': '10px', 'textAlign': 'center'}
+                                ),
+                                width=3  
+                            ),
+                            dbc.Col(
+                                html.Div(
+                                    [
+                                        html.Label(
+                                            "Select Map Type:",
+                                            style={
+                                                'fontWeight': 'bold',
+                                                'marginRight': '10px',
+                                                'color': '#D4AF37'
+                                            }
+                                        ),
+                                        dcc.Dropdown(
+                                            id='map-type-dropdown',
+                                            options=map_type_options,
+                                            value="tratados",
+                                            clearable=False,
+                                            style={
+                                                'width': '300px', 
+                                                'height': '25px',
+                                                'padding': '2px',
+                                                'fontSize': '15px',
+                                                'display': 'inline-block'
+                                            }
+                                        )
+                                    ],
+                                    style={'padding': '10px', 'textAlign': 'center'}
+                                ),
+                                width=5  
+                            )
+                        ],
+                        justify="center",  
+                        align="center",  
+                        className="mb-2"
+                    ),
+                    html.Div(
+                        [dcc.Graph(id='graph-map')],
+                        style={'padding': '5px'}
+                    )
+                ]
+            ),
+            width=9,
+            style={
+                'border': '1px solid #D4AF37',
+                'border-radius': '10px',
+                'backgroundColor': "#1B3B1A"
+                },
+        ),        
+    ]
+),
 
 def page2():
-        # Graph 1: line chart of gini trend over time between 
-        # avocado-growing and non-avocado-growing municipalities.
         return dbc.Row(
             [
                 dbc.Col(
@@ -759,7 +858,7 @@ def page2():
                                             style={
                                                 'border-width': '0',
                                                 'width': '100%',
-                                                'height': '600px'
+                                                'height': '585px'
                                                 },
                                             srcDoc=plot_gini_value_lines()
                                         )                                  
@@ -789,6 +888,7 @@ def page2():
                                                     } for col, name in \
                                                         value_types.items()
                                             ],
+                                            style={'width': '50%'}
                                         ),
                                     html.Iframe(
                                             title='Values for Different Crops',
@@ -819,7 +919,8 @@ def page2():
                                         options=[
                                             {'label': yr, 'value': yr} for yr in \
                                                 df_wage_data['year'].unique().tolist()
-                                        ]
+                                        ],
+                                        style={'width': '50%'}
                                     ),
                                     html.Iframe(
                                             id='wage-bar',
