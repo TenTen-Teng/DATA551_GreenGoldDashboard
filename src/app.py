@@ -224,7 +224,7 @@ def update_map(selected_year, map_type):
         fig = go.Figure()
         # Avocado Municipalities
         df_trat = df_tratados[df_tratados['year'] == selected_year]
-        fig.add_trace(go.Choroplethmap(
+        fig.add_trace(go.Choroplethmapbox(
             geojson=base_geojson,
             locations=df_trat['mun_name'],
             z=df_trat['gini'],
@@ -239,7 +239,7 @@ def update_map(selected_year, map_type):
         ))
         # Non-Avocado Municipalities
         df_ctrl = df_control[df_control['year'] == selected_year]
-        fig.add_trace(go.Choroplethmap(
+        fig.add_trace(go.Choroplethmapbox(
             geojson=base_geojson,
             locations=df_ctrl['mun_name'],
             z=df_ctrl['gini'],
