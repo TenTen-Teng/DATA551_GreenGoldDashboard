@@ -718,6 +718,7 @@ def page1():
                 'fontFamily': 'Open Sans, sans-serif',
                 # 'maxWidth': '1000px',
                 'margin': 'auto',
+                'height': '600px',
                 'width': '100%'
             },
             children=[
@@ -734,7 +735,7 @@ def page1():
                                         "Select Year:",
                                         style={
                                             'fontWeight': 'bold',
-                                            'marginRight': '10px',
+                                            'marginRight': '8px',
                                             "color": "#D4AF37"
                                         }
                                     ),
@@ -747,7 +748,7 @@ def page1():
                                         value=available_years[0],
                                         clearable=False,
                                         style={
-                                            'width': '100px',  
+                                            'width': '90px',  
                                             'height': '25px',
                                             'padding': '2px',
                                             'fontSize': '15px',
@@ -766,7 +767,7 @@ def page1():
                                         "Select Map Type:",
                                         style={
                                             'fontWeight': 'bold',
-                                            'marginRight': '10px',
+                                            'marginRight': '8px',
                                             'color': '#D4AF37'
                                         }
                                     ),
@@ -776,7 +777,7 @@ def page1():
                                         value="tratados",
                                         clearable=False,
                                         style={
-                                            'width': '300px', 
+                                            'width': '240px', 
                                             'height': '25px',
                                             'padding': '2px',
                                             'fontSize': '15px',
@@ -806,7 +807,13 @@ def page1():
             'backgroundColor': "#1B3B1A",
             },
     ),        
-]
+],
+    style={
+        # "backgroundColor": "black", 
+        "padding": "20px", 
+        # "maxWidth": "600px", 
+        "margin": "auto"
+        },
 )
 
 def page2():
@@ -917,7 +924,13 @@ def page2():
                     'border-radius': '10px',
                     },
             )
-        ]
+        ],
+    style={
+        # "backgroundColor": "black", 
+        "padding": "20px", 
+        # "maxWidth": "600px", 
+        "margin": "auto"
+        },
 )
 
 @app.callback(
