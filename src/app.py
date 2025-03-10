@@ -12,11 +12,11 @@ import plotly.graph_objects as go
 import json
 import pandas as pd
 
-from data_process import (
+from .data_process import (
     crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
     number_card_dataset
     )
-from helper import calculate_change
+from .helper import calculate_change
 
 # absolute path to the root of the repository
 repo_root = Path(__file__).resolve().parents[1]
@@ -77,7 +77,11 @@ value_types = {
 }
 
 """>>>>>> Callbacks <<<<<<"""
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(
+    __name__,
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    suppress_callback_exceptions=True
+    )
 app.title = "Green Gold Dashboard"
 
 # Number card callback.
@@ -674,42 +678,16 @@ def page1():
                         style={"color": "gold", "textAlign": "center", "margin-top": "0px", "margin-bottom": "1px"}
                         ),
 
-                    html.Br(),
-
-                    # # Explanation of the Gini coefficient
-                    # html.P(
-                    #     "Gini Number: Measures income inequality",
-                    #     style={"color": "white", "textAlign": "center"}
-                    #     ),
-                    # html.P(
-                    #     "Higher = more inequality (▲ Red = worsening)", 
-                    #     style={
-                    #         "color": "white", 
-                    #         "textAlign": "center", 
-                    #         "fontSize": "15px"
-                    #         }
-                    #     ),
-                    # html.P(
-                    #     "Lower = more equality (▼ Green = improving)", 
-                    #     style={
-                    #         "color": "white", 
-                    #         "textAlign": "center", 
-                    #         "fontSize": "15px"
-                    #         }
-                    #     ),
-                ],
-                width=3,
-                # style={
-                #     'border': '1px solid #d3d3d3',
-                #     'border-radius': '10px',
-                #     'backgroundColor': "black", 
-                #     },
-                style={
-                    'border': '1px solid #D4AF37',
-                    'border-radius': '10px',
-                    'backgroundColor': "#1B3B1A"
-                    },
-            ),
+                        html.Br(),
+                    ],
+                    
+                    width=3,
+                    style={
+                        'border': '1px solid #D4AF37',
+                        'border-radius': '10px',
+                        'backgroundColor': "#1B3B1A"
+                        },
+                ),
 
         # Map chart.
         dbc.Col(
