@@ -12,11 +12,11 @@ import plotly.graph_objects as go
 import json
 import pandas as pd
 
-from .data_process import (
+from data_process import (
     crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
     number_card_dataset
     )
-from .helper import calculate_change
+from helper import calculate_change
 
 # absolute path to the root of the repository
 repo_root = Path(__file__).resolve().parents[1]
@@ -733,7 +733,7 @@ def page1():
                                             {"label": str(year), "value": year}
                                             for year in available_years
                                         ],
-                                        # value=available_years[0],
+                                        value=available_years[8],
                                         clearable=False,
                                         style={
                                             'width': '100%',  
@@ -767,7 +767,7 @@ def page1():
                                         id='map-type-dropdown',
                                         placeholder='Select Map Type...',
                                         options=map_type_options,
-                                        # value="tratados",
+                                        value="both",
                                         clearable=False,
                                         style={
                                             'width': '100%', 
