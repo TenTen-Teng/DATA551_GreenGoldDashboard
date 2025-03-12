@@ -12,11 +12,11 @@ import plotly.graph_objects as go
 import json
 import pandas as pd
 
-from data_process import (
+from .data_process import (
     crops_line_dataset, gini_line_dataset, wage_dataset, map_dataset,
     number_card_dataset
     )
-from helper import calculate_change
+from .helper import calculate_change
 
 # absolute path to the root of the repository
 repo_root = Path(__file__).resolve().parents[1]
@@ -1067,6 +1067,6 @@ def toggle_page(n_clicks, current_content):
 server = app.server 
 if __name__ == '__main__':
     app.run_server(
-        debug=True,
+        debug=False,
         host='0.0.0.0', port=int(os.environ.get('PORT', 8050)),
     )
