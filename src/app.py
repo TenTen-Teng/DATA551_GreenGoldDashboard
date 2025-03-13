@@ -160,7 +160,7 @@ def update_gini(selected_mun, year1, year2):
     # Combine arrow and percentage change into a single display element
     change_output = html.Span(
         [arrow, " ", change_display],
-        style={"color": arrow_color, "fontSize": "24px", "fontWeight": "bold"}
+        style={"color": arrow_color, "fontSize": "45px", "fontWeight": "bold"}
     )
 
     return (
@@ -597,7 +597,7 @@ def page1():
             # Number card.
             dbc.Col(
                 [
-                    html.H3("Mexico | Michoacán", style={"textAlign": "center", "color": "#D4AF37"}),
+                    html.H3("Mexico | Michoacán", style={"textAlign": "center", "color": "#D4AF37", "fontSize": "30px"}),
                     
                     # Summary Cards
                     html.Div(
@@ -622,7 +622,20 @@ def page1():
                                         html.P(
                                             id="avocado-change",
                                             className="card-text",
-                                            style={"textAlign": "center", "margin": "0", "color": "#D4AF37"}
+                                            style={"textAlign": "center",
+                                                   "margin": "0",
+                                                   "color": "#D4AF37",
+                                                   "fontSize": "45px",
+                                                   "fontWeight": "bold",
+                                                   "display": "flex",
+                                                   "alignItems": "center",
+                                                   "justifyContent": "center",
+                                                   "width": "100%",
+                                                   "minHeight": "45px",
+                                                   "maxHeight": "45px",
+                                                   "overflow": "hidden",
+                                                   "letterSpacing": "1px",
+                                                  }
                                         )
                                     )
                                 ],
@@ -630,7 +643,8 @@ def page1():
                                     "width": "18rem",
                                     "margin": "5px",
                                     "backgroundColor": "#445B1F",
-                                    "border": "none"
+                                    "border": "none",
+                                    "flexGrow": 1
                                 }
                             ),
                             dbc.Card(
@@ -646,7 +660,20 @@ def page1():
                                         html.P(
                                             id="nonavocado-change",
                                             className="card-text",
-                                            style={"textAlign": "center", "margin": "0", "color": "#D4AF37"}
+                                            style={"textAlign": "center",
+                                                   "margin": "0",
+                                                   "color": "#D4AF37",
+                                                   "fontSize": "45px",
+                                                   "fontWeight": "bold",
+                                                   "display": "flex",
+                                                   "alignItems": "center",
+                                                   "justifyContent": "center",
+                                                   "width": "100%",
+                                                   "minHeight": "45px",
+                                                   "maxHeight": "45px",
+                                                   "overflow": "hidden",
+                                                   "letterSpacing": "1px"
+                                                  }
                                         )
                                     )
                                 ],
@@ -654,7 +681,8 @@ def page1():
                                     "width": "18rem",
                                     "margin": "5px",
                                     "backgroundColor": "#445B1F",
-                                    "border": "none"
+                                    "border": "none",
+                                    "flexGrow": 1
                                 }
                             )
                         ]
@@ -675,7 +703,7 @@ def page1():
                     
                     html.Label(
                         "Select Municipality:",
-                        style={"color": "#D4AF37", "display": "block", "textAlign": "center", "margin-bottom": "3px"}
+                        style={"color": "#D4AF37", "display": "block", "textAlign": "center", "margin-bottom": "1px"}
                     ),
                     dcc.Dropdown(
                         id="mun-dropdown",
@@ -686,7 +714,12 @@ def page1():
                     ),
                     html.Br(),
                     
-                    html.Label("Select Two Years (Pre & Post 2011):", style={"color": "#D4AF37"}),
+                    html.Label("Select Two Years (Pre & Post 2011):",
+                               style={"color": "#D4AF37",
+                                      "textAlign": "center",
+                                      "display": "block",
+                                      "margin-top": "-5px",
+                                      "margin-bottom": "2px"}),
                     dbc.Row([
                         dbc.Col(
                             dcc.Dropdown(
@@ -698,7 +731,7 @@ def page1():
                                 value=2010,
                                 clearable=False,
                                 style={"color": "black", "width": "100%", "height": "30px"},
-                            ), width=6, style={"padding-left": "5px", "padding-right": "2px"}
+                            ), width=6, style={"padding-left": "2px", "padding-right": "2px", "margin-top": "-3px"}
                         ),
                         dbc.Col(
                             dcc.Dropdown(
@@ -710,7 +743,7 @@ def page1():
                                 value=2018,
                                 clearable=False,
                                 style={"color": "black", "width": "100%", "height": "30px"},
-                            ), width=6, style={"padding-left": "2px", "padding-right": "5px"}
+                            ), width=6, style={"padding-left": "2px", "padding-right": "5px", "margin-top": "-3px"}
                         ),
                     ], style={"margin": "0px", "justify-content": "center"}),
 
@@ -719,20 +752,20 @@ def page1():
                     # Display Gini coefficient information
                     html.H3(
                         id="gini-title",
-                        style={"textAlign": "center", "color": "#D4AF37", "margin-bottom": "5px"}
+                        style={"textAlign": "center", "color": "#D4AF37", "margin-bottom": "5px", "fontSize": "30px"}
                     ),
 
                     dbc.Row([
                         dbc.Col(
                             html.P(
                                 id="gini-value-1",
-                                style={"textAlign": "center", "fontSize": "18px", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
+                                style={"textAlign": "center", "fontSize": "20px", "fontWeight": "bold", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
                             ), width=6, style={"padding-right": "3px"}
                         ),
                         dbc.Col(
                             html.P(
                                 id="gini-value-2",
-                                style={"textAlign": "center", "fontSize": "18px", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
+                                style={"textAlign": "center", "fontSize": "20px", "fontWeight": "bold", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
                             ), width=6, style={"padding-right": "3px"}
                         ),
                     ], style={"justify-content": "center", "margin-bottom": "0px", "padding": "0px"}),
@@ -743,7 +776,7 @@ def page1():
                                     id="change-container",
                                     style={
                                         "textAlign": "center",
-                                        "fontSize": "55px",
+                                        "fontSize": "70px",
                                         "fontWeight": "bold",
                                         "margin-top": "2px",
                                         "margin-bottom": "1px",
