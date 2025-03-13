@@ -55,6 +55,13 @@ Please see our initial dashboard [sketch](./data/media/sketch.png)
                     <sub><b>Vidal Tinoco</b></sub>
                 </a>
             </td>
+            <td align="center">
+                <a href="https://github.com/Ieleniayu">
+                    <img src="https://avatars.githubusercontent.com/u/113123777?v=4" width="100;" alt="Ieleniayu"/>
+                    <br />
+                    <sub><b>Ieleniayu</b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
