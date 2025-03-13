@@ -84,6 +84,37 @@ app = dash.Dash(
     )
 app.title = "Green Gold Dashboard"
 
+# Summary cards callback
+@app.callback(
+    [Output("avocado-change", "children"),
+     Output("nonavocado-change", "children")],
+    [Input("mun-dropdown", "value")]
+)
+def update_summary_cards(selected_mun):
+    
+    df_avocado = df_full[df_full['trat_2'] == 1]
+    df_nonavocado = df_full[df_full['trat_2'] == 0]
+    
+    avocado_before = df_avocado[df_avocado['year'] < 2011]['gini'].mean()
+    avocado_after  = df_avocado[df_avocado['year'] >= 2011]['gini'].mean()
+    
+    if avocado_before:
+        change_avocado_percent = ((avocado_after - avocado_before) / avocado_before) * 100
+    else:
+        change_avocado_percent = 0
+    
+    nonavocado_before = df_nonavocado[df_nonavocado['year'] < 2011]['gini'].mean()
+    nonavocado_after  = df_nonavocado[df_nonavocado['year'] >= 2011]['gini'].mean()
+    if nonavocado_before:
+        change_nonavocado_percent = ((nonavocado_after - nonavocado_before) / nonavocado_before) * 100
+    else:
+        change_nonavocado_percent = 0
+
+    avocado_change_text = f"{change_avocado_percent:+.1f}%"
+    nonavocado_change_text = f"{change_nonavocado_percent:+.1f}%"
+    
+    return avocado_change_text, nonavocado_change_text
+
 # Number card callback.
 @app.callback(
     [
@@ -121,7 +152,7 @@ def update_gini(selected_mun, year1, year2):
     else:
         arrow, arrow_color = (
             (" ▲ ", "red") if change > 0 else
-            (" ▼ ", "green") if change < 0 else
+            (" ▼ ", "#00FF00") if change < 0 else
             (" - ", "gray")
         )
         change_display = f"{abs(change):.1f}%"
@@ -129,7 +160,7 @@ def update_gini(selected_mun, year1, year2):
     # Combine arrow and percentage change into a single display element
     change_output = html.Span(
         [arrow, " ", change_display],
-        style={"color": arrow_color, "fontSize": "24px", "fontWeight": "bold"}
+        style={"color": arrow_color, "fontSize": "45px", "fontWeight": "bold"}
     )
 
     return (
@@ -563,135 +594,254 @@ def page1():
     # Explanation of the Gini coefficient
     return dbc.Row(
         [
-        # Number card.
-        dbc.Col(
+            # Number card.
+            dbc.Col(
                 [
-                    html.H3(
-                        "Mexico | Michoacán",
-                        style={"textAlign": "center", "color": "#D4AF37"}
-                    ),
-                    html.Label(
-                            "Select Municipality:",
-                            style={
-                                "color": "#D4AF37", 
-                                "display": "block", 
-                                "textAlign": "center", 
-                                "margin-bottom": "3px"
+                    html.H3("Mexico | Michoacán", style={"textAlign": "center", "color": "#D4AF37", "fontSize": "30px"}),
+                    
+                    # Summary Cards
+                    html.Div(
+                        id="summary-cards-container",
+                        style={
+                            "display": "flex",
+                            "flexWrap": "wrap",
+                            "justifyContent": "center",
+                            "marginBottom": "20px"
+                        },
+                        children=[
+                            dbc.Card(
+                                [
+                                    dbc.CardHeader(
+                                        [
+                                            "Avocado Change",
+                                            html.Span(" ❔", id="avocado-change-tooltip", style={"cursor": "pointer"})
+                                        ],
+                                        style={"textAlign": "center", "fontWeight": "bold", "color": "#D4AF37"}
+                                    ),
+                                    dbc.CardBody(
+                                        html.P(
+                                            id="avocado-change",
+                                            className="card-text",
+                                            style={"textAlign": "center",
+                                                   "margin": "0",
+                                                   "color": "#FFFF00",
+                                                   "fontSize": "45px",
+                                                   "fontWeight": "bold",
+                                                   "display": "flex",
+                                                   "alignItems": "center",
+                                                   "justifyContent": "center",
+                                                   "width": "100%",
+                                                   "minHeight": "45px",
+                                                   "maxHeight": "45px",
+                                                   "overflow": "hidden",
+                                                   "letterSpacing": "1px",
+                                                  }
+                                        )
+                                    )
+                                ],
+                                style={
+                                    "width": "18rem",
+                                    "margin": "5px",
+                                    "backgroundColor": "#445B1F",
+                                    "border": "none",
+                                    "flexGrow": 1
                                 }
                             ),
-                    dcc.Dropdown(
-                        id="mun-dropdown",
-                        options=[{"label": mun, "value": mun} for mun in unique_municipalities],
-                        value=unique_municipalities[0],
-                        clearable=False,
-                        style={
-                                "color": "black",
-                                "width": "80%", "margin": "0 auto", "height": "30px"
+                            dbc.Card(
+                                [
+                                    dbc.CardHeader(
+                                        [
+                                            "Non-Avocado Change",
+                                            html.Span(" ❔", id="nonavocado-change-tooltip", style={"cursor": "pointer"})
+                                        ],
+                                        style={"textAlign": "center", "fontWeight": "bold", "color": "#D4AF37"}
+                                    ),
+                                    dbc.CardBody(
+                                        html.P(
+                                            id="nonavocado-change",
+                                            className="card-text",
+                                            style={"textAlign": "center",
+                                                   "margin": "0",
+                                                   "color": "#FFFF00",
+                                                   "fontSize": "45px",
+                                                   "fontWeight": "bold",
+                                                   "display": "flex",
+                                                   "alignItems": "center",
+                                                   "justifyContent": "center",
+                                                   "width": "100%",
+                                                   "minHeight": "45px",
+                                                   "maxHeight": "45px",
+                                                   "overflow": "hidden",
+                                                   "letterSpacing": "1px"
+                                                  }
+                                        )
+                                    )
+                                ],
+                                style={
+                                    "width": "18rem",
+                                    "margin": "5px",
+                                    "backgroundColor": "#445B1F",
+                                    "border": "none",
+                                    "flexGrow": 1,
+                                    "margin-bottom": "0px"
                                 }
+                            )
+                        ]
                     ),
-                    html.Br(),
-
-                    # Year selection dropdowns (pre and post 2011)
-                    html.Label("Select Two Years (Pre & Post 2011):", style={"color": "#D4AF37"}),
-                    dbc.Row([
-                        dbc.Col(
-                            dcc.Dropdown(
-                                id="year-dropdown-1",
-                                options=[
-                                    {"label": str(y), "value": y} \
-                                        for y in unique_years if y <= 2011
-                                ],
-                                value=2010,
-                                clearable=False,
-                                style={"color": "black", "width": "100%", "height": "30px"},
-                            ), width=6, style={"padding-left": "5px", "padding-right": "2px"}
-                        ),
-                        dbc.Col(
-                            dcc.Dropdown(
-                                id="year-dropdown-2",
-                                options=[
-                                    {"label": str(y), "value": y} \
-                                        for y in unique_years if y > 2011
-                                ],
-                                value=2018,
-                                clearable=False,
-                                style={"color": "black", "width": "100%", "height": "30px"},
-                            ), width=6, style={"padding-left": "2px", "padding-right": "5px"}
-                        ),
-                    ], style={"margin": "0px", "justify-content": "center"}),
-
-                    html.Br(),
-
-                    # Display Gini coefficient information
-                    html.H3(
-                        id="gini-title",
-                        style={"textAlign": "center", "color": "#D4AF37", "margin-bottom": "5px"}
+                    # Tooltips for Summary Cards
+                    dbc.Tooltip(
+                        "Change in the average Gini coefficient of avocado-producing municipalities, before and after 2011 (access to the US market)",
+                        target="avocado-change-tooltip",
+                        placement="top",
+                        style={"fontSize": "14px", "maxWidth": "300px", "whiteSpace": "normal"}
                     ),
+                    dbc.Tooltip(
+                        "Change in the average Gini coefficient of Non avocado-producing municipalities, before and after 2011 (access to the US market)",
+                        target="nonavocado-change-tooltip",
+                        placement="top",
+                        style={"fontSize": "14px", "maxWidth": "300px", "whiteSpace": "normal"}
+                    ),
+                    
+                    dbc.Card(
+                        [
+                            dbc.CardBody(
+                                [
+                                    html.Label(
+                                        "Select Municipality:",
+                                        style={"color": "#D4AF37", "display": "block", "textAlign": "center", "margin-bottom": "0px", "margin-top": "-20px"}
+                                    ),
+                                    dcc.Dropdown(
+                                        id="mun-dropdown",
+                                        options=[{"label": mun, "value": mun} for mun in unique_municipalities],
+                                        value=unique_municipalities[0],
+                                        clearable=False,
+                                        style={"color": "black", "width": "80%", "margin": "0 auto", "height": "30px"}
+                                    ),
+                                    html.Br(),
 
-                    dbc.Row([
-                        dbc.Col(
-                            html.P(
-                                id="gini-value-1",
-                                style={"textAlign": "center", "fontSize": "18px", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
-                            ), width=6, style={"padding-right": "3px"}
-                        ),
-                        dbc.Col(
-                            html.P(
-                                id="gini-value-2",
-                                style={"textAlign": "center", "fontSize": "18px", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
-                            ), width=6, style={"padding-right": "3px"}
-                        ),
-                    ], style={"justify-content": "center", "margin-bottom": "0px", "padding": "0px"}),
+                                    html.Label("Select Two Years (Pre & Post 2011):",
+                                               style={"color": "#D4AF37",
+                                                      "textAlign": "center",
+                                                      "display": "block",
+                                                      "margin-top": "-10px",
+                                                      "margin-bottom": "0px"}),
+                                    dbc.Row([
+                                        dbc.Col(
+                                            dcc.Dropdown(
+                                                id="year-dropdown-1",
+                                                options=[
+                                                    {"label": str(y), "value": y} \
+                                                        for y in unique_years if y <= 2011
+                                                ],
+                                                value=2010,
+                                                clearable=False,
+                                                style={"color": "black", "width": "100%", "height": "30px"},
+                                            ), width=6, style={"padding-left": "2px", "padding-right": "2px", "margin-top": "-3px"}
+                                        ),
+                                        dbc.Col(
+                                            dcc.Dropdown(
+                                                id="year-dropdown-2",
+                                                options=[
+                                                    {"label": str(y), "value": y} \
+                                                        for y in unique_years if y > 2011
+                                                ],
+                                                value=2018,
+                                                clearable=False,
+                                                style={"color": "black", "width": "100%", "height": "30px"},
+                                            ), width=6, style={"padding-left": "2px", "padding-right": "5px", "margin-top": "-3px"}
+                                        ),
+                                    ], style={"margin": "0px", "justify-content": "center"}),
 
-                            # Display change indicator (arrow + percentage + hover tooltip)
-                            html.Div([
-                                html.Span(
-                                    id="change-container",
-                                    style={
-                                        "textAlign": "center",
-                                        "fontSize": "55px",
-                                        "fontWeight": "bold",
-                                        "margin-top": "2px",
-                                        "margin-bottom": "1px",
-                                        "line-height": "0.5"
-                                    }
-                                ),
+                                    html.Br(),
 
-                                html.Span(
-                                    "  ❔",
-                                    id="tooltip-question",
-                                    style={"cursor": "pointer", "fontSize": "15px", "verticalAlign": "super"}
-                                ),
+                                    # Display Gini coefficient information
+                                    html.H3(
+                                        id="gini-title",
+                                        style={"textAlign": "center", "color": "#D4AF37", "margin-bottom": "5px", "fontSize": "30px"}
+                                    ),
 
-                                # Tooltip that appears on hover
-                                dbc.Tooltip(
-                                    [
-                                        "Higher = more inequality", 
-                                        html.Br(),
-                                        "(▲ Red = worsening)", 
-                                        html.Br(),
-                                        "Lower = more equality", 
-                                        html.Br(),
-                                        "(▼ Green = improving)"
-                                    ],
-                                    target="tooltip-question",
-                                    placement="right",
-                                    style={"fontSize": "14px", "maxWidth": "300px", "whiteSpace": "normal"}
-                                )
-                            ], style={"display": "flex", "alignItems": "center", "justifyContent": "center"}),
+                                    dbc.Row([
+                                        dbc.Col(
+                                            html.P(
+                                                id="gini-value-1",
+                                                style={"textAlign": "center",
+                                                       "fontSize": "20px",
+                                                       "fontWeight": "bold",
+                                                       "color": "#D4AF37",
+                                                       "margin-bottom": "0px",
+                                                       "line-height": "0.5"}
+                                            ), width=6, style={"padding-right": "3px"}
+                                        ),
+                                        dbc.Col(
+                                            html.P(
+                                                id="gini-value-2",
+                                                style={"textAlign": "center", "fontSize": "20px", "fontWeight": "bold", "color": "#D4AF37", "margin-bottom": "0px", "line-height": "0.5"}
+                                            ), width=6, style={"padding-right": "3px"}
+                                        ),
+                                    ], style={"justify-content": "center", "margin-bottom": "0px", "padding": "0px"}),
+
+                                            # Display change indicator (arrow + percentage + hover tooltip)
+                                            html.Div([
+                                                html.Span(
+                                                    id="change-container",
+                                                    style={
+                                                        "textAlign": "center",
+                                                        "fontSize": "70px",
+                                                        "fontWeight": "bold",
+                                                        "margin-top": "2px",
+                                                        "margin-bottom": "1px",
+                                                        "line-height": "0.5"
+                                                    }
+                                                ),
+
+                                                html.Span(
+                                                    "  ❔",
+                                                    id="tooltip-question",
+                                                    style={"cursor": "pointer", "fontSize": "15px", "verticalAlign": "super"}
+                                                ),
+
+                                                # Tooltip that appears on hover
+                                                dbc.Tooltip(
+                                                    [
+                                                        "Higher = more inequality", 
+                                                        html.Br(),
+                                                        "(▲ Red = worsening)", 
+                                                        html.Br(),
+                                                        "Lower = more equality", 
+                                                        html.Br(),
+                                                        "(▼ Green = improving)"
+                                                    ],
+                                                    target="tooltip-question",
+                                                    placement="right",
+                                                    style={"fontSize": "14px", "maxWidth": "300px", "whiteSpace": "normal"}
+                                                )
+                                            ], style={"display": "flex", "alignItems": "center", "justifyContent": "center"}),
+                                        ]
+                                    )
+                                ],
+                                style={
+                                    "width": "100%",
+                                    "margin": "1px auto",
+                                    "backgroundColor": "#445B1F",
+                                    "border": "1px solid #445B1F",
+                                    "borderRadius": "3px",
+                                    "padding": "3px"
+                                }
+                            ),
+                                
 
                     html.Br(),
 
                     # Background information
-                    html.P(
-                        "Background:",
-                        style={"color": "white", "textAlign": "center", "margin-top": "0px", "margin-bottom": "1px"}),
-                    html.P(
-                        "2011 (Full U.S. market access gained)",
-                        style={"color": "gold", "textAlign": "center", "margin-top": "0px", "margin-bottom": "1px"}
-                        ),
+                    # html.P(
+                    #     "Background:",
+                    #     style={"color": "white", "textAlign": "center", "margin-top": "0px", "margin-bottom": "1px"}),
+                    # html.P(
+                    #     "2011 (Full U.S. market access gained)",
+                    #     style={"color": "gold", "textAlign": "center", "margin-top": "0px", "margin-bottom": "1px"}
+                    #     ),
 
-                        html.Br(),
+                        # html.Br(),
                     ],
                     
                     width=3,
@@ -713,11 +863,15 @@ def page1():
                 'width': '100%'
             },
             children=[
+                # html.H2(
+                #     "Interactive Municipal Gini Map",
+                #     style={'textAlign': 'center', "color": "#D4AF37"}
+                # ),
                 dbc.Row(
                     [
                         dbc.Col(
                             # html.Div(
-                                [
+                                # [
                                     # html.Label(
                                     #     "Select Year:",
                                     #     style={
@@ -743,9 +897,9 @@ def page1():
                                             'display': 'inline-block'
                                         }
                                     ),
-                                ],
+                                # ],
                                 style={
-                                    # 'padding': '10px', 
+                                    # 'padding': '10px',
                                     'textAlign': 'center'
                                     },
                             # ),
@@ -794,7 +948,6 @@ def page1():
                             'padding': '5px',
                             'height': '90%'
                             }
-                    # )
                 )
             ]
         ),
