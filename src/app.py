@@ -452,7 +452,8 @@ def plot_wage_bars(year):
             'PercentOfTotal:Q', 
             title="Percentage of total", 
             axis=alt.Axis(format='.0%'),
-            ).stack(False),
+            stack = False
+            ),
         color=alt.Color(
             'trat:N',
             title="Treatment groups",

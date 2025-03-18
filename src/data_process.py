@@ -85,7 +85,7 @@ def crops_line_dataset():
         elif name == 'Maíz grano':
             return 'Corn'
         elif name == 'Aguacate':
-            return 'Acovodo'
+            return 'Avocado'
         else:
             return name
 
