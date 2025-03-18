@@ -440,7 +440,7 @@ def plot_gini_value_lines():
 def plot_wage_bars(year):
     click = alt.selection_point(fields=['trat'], bind='legend')
 
-    bar = alt.Chart(df_wage_data).mark_bar(opacity=0.7).transform_filter(
+    bar = alt.Chart(df_wage_data).mark_bar(opacity=0.5).transform_filter(
         f"datum.year == {year}"
     ).transform_joinaggregate(
         Total='sum(value)',
@@ -452,7 +452,7 @@ def plot_wage_bars(year):
             'PercentOfTotal:Q', 
             title="Percentage of total", 
             axis=alt.Axis(format='.0%'),
-            stack = False
+            stack=False
             ),
         color=alt.Color(
             'trat:N',
