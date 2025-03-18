@@ -302,7 +302,7 @@ def plot_crop_value_lines(ycol):
     """Plot line chart for 3 different crops: 
     blueburry - Arándano;
     corn - Maíz grano;
-    acovodo - Aguacate
+    avocado - Aguacate
 
     Args:
         ycol (str): The value, such as production value, yield, etc.
@@ -310,12 +310,12 @@ def plot_crop_value_lines(ycol):
     Returns:
         Altair plot: The altair chart.
     """
-    domain = ['Blueburry', 'Corn', 'Acovodo']
+    domain = ['Blueburry', 'Corn', 'Avocado']
     colors = ['#464196', '#fbec5d', '#1B9E77']
     line = alt.Chart(df_crop_data).transform_filter(
         {
             'field': 'name_unitmes',
-            'oneOf': ['Blueburry', 'Corn', 'Acovodo']
+            'oneOf': ['Blueburry', 'Corn', 'Avocado']
             }
     ).mark_line(point=True).encode(
         x=alt.X('year:N', title=None),
@@ -452,7 +452,7 @@ def plot_wage_bars(year):
             'PercentOfTotal:Q', 
             title="Percentage of total", 
             axis=alt.Axis(format='.0%'),
-            ),
+            ).stack(False),
         color=alt.Color(
             'trat:N',
             title="Treatment groups",
